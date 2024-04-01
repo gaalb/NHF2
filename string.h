@@ -92,7 +92,7 @@ public:
      * @return String, a két String összefűzve.
      */
     String operator+(const String& rhs) const;
-    
+    #if 0
     /**
      * @brief Összeadás operátor: konkatenál egy Stringet, és egy c stringet.
      * 
@@ -108,7 +108,7 @@ public:
      * @return String, a bal oldlai Stringhez hozzáfűzve a karakter.
      */
     String operator+(const char rhs) const;
-
+    #endif
     /**
      * @brief Indexelő operátor (nem konstans)
      * 
@@ -126,6 +126,21 @@ public:
      */
     const char& operator[](const size_t idx) const;
 
+    ////////////////////////////////////////////
+
+    bool operator==(const String& rhs) const;
+    bool operator!=(const String& rhs) const;
+    /*
+    bool operator==(const char* rhs) const;
+    bool operator!=(const char* rhs) const;
+    bool operator==(const char c) const;
+    bool operator!=(const char c) const;
+    */
+
+    String& operator+=(const String& str);
+    //String& operator+=(const char* str);
+    //String& operator+=(const char c);
+
     class iterator {
     private:
         char* ptr_c;
@@ -135,8 +150,8 @@ public:
         iterator operator++(int);
         char& operator*() const;
         char* operator->() const;
-        bool operator==(iterator rhs) const;
-        bool operator!=(iterator rhs) const;
+        bool operator==(const iterator& rhs) const;
+        bool operator!=(const iterator& rhs) const;
     };
     iterator begin() const;
     iterator end() const;
@@ -168,5 +183,12 @@ String operator+(const char c, const String& str);
  * @return String a két string összefűzve.
  */
 String operator+(const char* left, const String& right);
+
+
+/////////////////////////////////////////
+bool operator==(const char* left, const String& right);
+bool operator!=(const char* left, const String& right);
+bool operator==(const char left, const String& right);
+bool operator!=(const char left, const String& right);
 
 #endif // STRING_H

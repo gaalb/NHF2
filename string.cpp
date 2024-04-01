@@ -31,6 +31,7 @@ String& String::operator=(const String& rhs) {
     if (this != &rhs) {
         delete[] str;
         len = rhs.len;
+        str = new char[len+1];
         strcpy(str, rhs.str);
     }    
     return *this; 
@@ -49,7 +50,7 @@ String String::operator+(const String& rhs) const {
     strcat(ret.str, rhs.str);
     return ret;
 }
-
+/*
 String String::operator+(const char* rhs) const {
     return *this + String(rhs);
 }
@@ -57,7 +58,7 @@ String String::operator+(const char* rhs) const {
 String String::operator+(const char rhs) const {
     return *this + String(rhs);
 }
-
+*/
 std::ostream& operator<<(std::ostream& os, const String& str) {
     os << str.c_str();
     return os;
@@ -108,11 +109,11 @@ char* String::iterator::operator->() const {
     return ptr_c;
 }
 
-bool String::iterator::operator==(String::iterator rhs) const {
+bool String::iterator::operator==(const String::iterator& rhs) const {
     return ptr_c == rhs.ptr_c;  // hmmmmmmmmmmmm
 }
 
-bool String::iterator::operator!=(String::iterator rhs) const {
+bool String::iterator::operator!=(const String::iterator& rhs) const {
     return ptr_c != rhs.ptr_c;
 }
 
@@ -123,3 +124,58 @@ String::iterator String::begin() const {
 String::iterator String::end() const {
     return String::iterator(str+len);
 }
+
+bool String::operator==(const String& rhs) const {
+    return strcmp(str, rhs.str) == 0;
+}
+
+bool String::operator!=(const String& rhs) const {
+    return !operator==(rhs);
+}
+
+/*
+bool String::operator==(const char* rhs) const {
+    return strcmp(str, rhs) == 0;
+}
+
+bool String::operator!=(const char* rhs) const {
+    return !operator==(rhs);
+}
+
+bool String::operator==(const char c) const {
+    return operator==(String(c));
+}
+
+bool String::operator!=(const char c) const {
+    return !operator==(c);
+}
+*/
+
+bool operator==(const char* left, const String& right) {
+    return String(left) == right;
+}
+bool operator!=(const char* left, const String& right) {
+    return String(left) != right;
+}
+bool operator==(const char left, const String& right) {
+    return String(left) == right;
+}
+bool operator!=(const char left, const String& right) {
+    return String(left) != right;
+}
+
+String& String::operator+=(const String& str) {
+    *this = *this + str;
+    return *this;
+}
+/*
+String& String::operator+=(const char* str) {
+    *this = *this + str;
+    return *this;
+}
+
+String& String::operator+=(const char c) {
+    *this = *this + c;
+    return *this;
+}
+*/

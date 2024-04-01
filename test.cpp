@@ -1,7 +1,10 @@
 #include "string.h"
+#include "titkosito.h"
+#include "tstring.h"
 
 #include "gtest_lite.h"
 #include "memtrace.h"
+
 
 using std::endl;
 using std::cout;
@@ -24,5 +27,17 @@ int main(void) {
     for (iter = iter_str.begin(); iter != iter_str.end(); ++iter) {
         cout << *iter;
     }
+    cout << endl << endl;
+    ShiftTitkosito t1(100);
+    String s1("01 89 abc");
+    for (auto elem : s1) {
+        char kodolva = t1.encode(elem);
+        cout << "betu: " << elem << ", titkositva: " << kodolva << ", dekodolva: " << t1.decode(kodolva) << endl;
+    }
+    TString t_str("pw", s1, t1);
+    cout << "titkosítva: " << t_str << endl;
+    t_str += "xyz ABC XYZ";
+    cout << "titkosítva: " << t_str << endl;
+    cout <<"eredeti: " << t_str.decode("pw") << endl;
     return 0;
 }
