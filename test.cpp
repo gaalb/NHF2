@@ -1,6 +1,7 @@
 #include "StringBase.h"
 #include "String.h"
 #include "Encryptor.h"
+#include "EncryptorList.h"
 #include "EncryptedString.h"
 
 #include "gtest_lite.h"
@@ -41,6 +42,10 @@ int main(void) {
     t_str += "xyz ABC XYZ";
     cout << "titkosítva: " << t_str << endl;
     cout <<"eredeti: " << t_str.decode("pw") << endl;
-    
+    ShiftEncryptor t2(5);
+    EncryptorList lst;
+    lst.append(t1);
+    lst.append(t2);
+    cout << "s1: " << s1 << ", encode: " << lst.encode(s1) << ", decode: " << lst.decode(lst.encode(s1)) << endl; 
     return 0;
 }

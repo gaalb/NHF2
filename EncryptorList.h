@@ -18,6 +18,8 @@ private:
     Node* head;  //head->prev is nullptr
     Node* tail;  //tail->next is nullptr
 public:
+    using Encryptor::encode;  //avoid name hiding
+    using Encryptor::decode;  //avoid name hiding
     EncryptorList();
     class iterator {
     private:

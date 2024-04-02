@@ -23,6 +23,8 @@ class XorEncryptor: public Encryptor {
 private:
     char key;
 public:
+    using Encryptor::encode;  //avoid name hiding
+    using Encryptor::decode;  //avoid name hiding
     XorEncryptor(char key='0');
     void set_key(char key);
     char get_key() const;
@@ -36,6 +38,8 @@ class ShiftEncryptor: public Encryptor {
 private:
     int shift;
 public:
+    using Encryptor::encode;  //avoid name hiding
+    using Encryptor::decode;  //avoid name hiding
     ShiftEncryptor(int shift = 0);
     void set_shift(int shift);
     char get_shift() const;
