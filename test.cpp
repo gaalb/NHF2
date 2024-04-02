@@ -1,6 +1,6 @@
-#include "string.h"
-#include "titkosito.h"
-#include "tstring.h"
+#include "String.h"
+#include "Encryptor.h"
+#include "EncryptedString.h"
 
 #include "gtest_lite.h"
 #include "memtrace.h"
@@ -28,13 +28,13 @@ int main(void) {
         cout << *iter;
     }
     cout << endl << endl;
-    ShiftTitkosito t1(100);
+    ShiftEncryptor t1(100);
     String s1("01 89 abc");
     for (auto elem : s1) {
         char kodolva = t1.encode(elem);
         cout << "betu: " << elem << ", titkositva: " << kodolva << ", dekodolva: " << t1.decode(kodolva) << endl;
     }
-    TString t_str("pw", s1, t1);
+    EncryptedString t_str("pw", s1, t1);
     cout << "titkosítva: " << t_str << endl;
     t_str += "xyz ABC XYZ";
     cout << "titkosítva: " << t_str << endl;

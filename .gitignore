@@ -1,4 +1,3 @@
-.vscode/
 *.doc
 *.pdf
 html/
@@ -6,3 +5,4 @@ latex/
 *.drawio
 *.tmp
 *.zip
+*.exe

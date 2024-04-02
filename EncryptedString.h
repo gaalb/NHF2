@@ -1,8 +1,8 @@
-#ifndef TSTRING_H
-#define TSTRING_H
+#ifndef ENCRYPTED_STRING_H
+#define ENCRYPTED_STRING_H
 
-#include "string.h"
-#include "titkosito.h"
+#include "String.h"
+#include "Encryptor.h"
 #include <stdexcept>
 
 #include "memtrace.h"
@@ -17,28 +17,28 @@ public:
     }
 };
 
-class TString {
+class EncryptedString {
 private:
-    String jelszo;
-    Titkosito* titkosito;
+    String password;
+    Encryptor* pEncryptor;
     String str;    
-    void check_pw(const String& pw) const;
+    void checkPw(const String& pw) const;
 public:
-    ~TString();
-    TString(const String& jelszo, const String& str = ""); //csak jelszo
-    TString(const String& jelszo, const String& str, const Titkosito& t);    
-    TString(const String& jelszo, const String& str, Titkosito* p_t);  
-    TString(const TString& other);
-    TString& operator=(const TString& right);
-    TString& operator=(const String& right);
+    ~EncryptedString();
+    EncryptedString(const String& pw, const String& str = ""); //csak jelszo
+    EncryptedString(const String& pw, const String& str, const Encryptor& encr); //reference param   
+    EncryptedString(const String& pw, const String& str, Encryptor* pEncr);  //ptr param
+    EncryptedString(const EncryptedString& other);
+    EncryptedString& operator=(const EncryptedString& right);
+    EncryptedString& operator=(const String& right);
     void set_pw(const String& new_pw, const String& old_pw);
     String decode(const String& pw) const;
-    TString& operator+=(const String& str);
+    EncryptedString& operator+=(const String& str);
     const char* c_str() const;
     char& operator[](const size_t idx);
     const char& operator[]( const size_t idx) const;
-    void set_decoder(const Titkosito& t, const String& pw);
-    void set_decoder(Titkosito* p_t, const String& pw);
+    void setEncryptor(const Encryptor& enc, const String& pw); //reference param
+    void setEncryptor(Encryptor* pEnc, const String& pw); //ptr param
     class iterator {
     private:
         String::iterator it;
@@ -57,6 +57,6 @@ public:
 
 };
 
-std::ostream& operator<<(std::ostream& os, const TString& str);
+std::ostream& operator<<(std::ostream& os, const EncryptedString& str);
 
-#endif // TSTRING_H
+#endif // ENCRYPTED_STRING_H

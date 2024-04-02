@@ -4,7 +4,7 @@
  * @brief A String osztály implementációját tartalmazó file.
  *
  */
-#include "string.h"
+#include "String.h"
 #include <cstring>
 #include <stdexcept>
 
@@ -50,15 +50,7 @@ String String::operator+(const String& rhs) const {
     strcat(ret.str, rhs.str);
     return ret;
 }
-/*
-String String::operator+(const char* rhs) const {
-    return *this + String(rhs);
-}
 
-String String::operator+(const char rhs) const {
-    return *this + String(rhs);
-}
-*/
 std::ostream& operator<<(std::ostream& os, const String& str) {
     os << str.c_str();
     return os;
@@ -133,24 +125,6 @@ bool String::operator!=(const String& rhs) const {
     return !operator==(rhs);
 }
 
-/*
-bool String::operator==(const char* rhs) const {
-    return strcmp(str, rhs) == 0;
-}
-
-bool String::operator!=(const char* rhs) const {
-    return !operator==(rhs);
-}
-
-bool String::operator==(const char c) const {
-    return operator==(String(c));
-}
-
-bool String::operator!=(const char c) const {
-    return !operator==(c);
-}
-*/
-
 bool operator==(const char* left, const String& right) {
     return String(left) == right;
 }
@@ -168,14 +142,3 @@ String& String::operator+=(const String& str) {
     *this = *this + str;
     return *this;
 }
-/*
-String& String::operator+=(const char* str) {
-    *this = *this + str;
-    return *this;
-}
-
-String& String::operator+=(const char c) {
-    *this = *this + c;
-    return *this;
-}
-*/

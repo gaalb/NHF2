@@ -1,4 +1,4 @@
-#include "titkosito.h"
+#include "Encryptor.h"
 
 #include "memtrace.h"
 
@@ -14,9 +14,10 @@ void printAsBinary(const T& value) {
     }
 }
 
-Titkosito::~Titkosito() {}
+/*Code for Encryptors in general*/
+Encryptor::~Encryptor() {}
 
-bool Titkosito::valid(int c) const {
+bool Encryptor::isValidInput(int c) const {
     if (c >= static_cast<int>('0') && c <= static_cast<int>('9')) {
         return true;  //0 és 9 közötti 
     }
@@ -29,7 +30,7 @@ bool Titkosito::valid(int c) const {
     return false;
 }
 
-char Titkosito::tartomanyba(int c) const {
+char Encryptor::shiftIntoScope(int c) const {
     int width = static_cast<int>('z') - static_cast<int>('0') + 1;
     while (c > static_cast<int>('z')) {
         c -= width;
@@ -41,8 +42,7 @@ char Titkosito::tartomanyba(int c) const {
     return static_cast<char>(c);                
 }
 
-//ezek nem tuti hogy jók:
-String Titkosito::encode(const String& str) const {
+String Encryptor::encode(const String& str) const {
     String ret = str;
     for (String::iterator iter = ret.begin(); iter != ret.end(); ++iter) {
         *iter = this->encode(static_cast<char>(*iter));
@@ -50,7 +50,7 @@ String Titkosito::encode(const String& str) const {
     return ret;
 }
 
-String Titkosito::decode(const String& str) const {
+String Encryptor::decode(const String& str) const {
     String ret = str;
     for (String::iterator iter = ret.begin(); iter != ret.end(); ++iter) {
         *iter = this->decode(static_cast<char>(*iter));
@@ -58,66 +58,67 @@ String Titkosito::decode(const String& str) const {
     return ret;
 }
 
-XorTitkosito::XorTitkosito(char key): key(key) {};
+/*Code for XorEncryptor (not a great encryptor for representation)*/
+XorEncryptor::XorEncryptor(char key): key(key) {};
 
-void XorTitkosito::set_key(char key) {
+void XorEncryptor::set_key(char key) {
     this->key = key;
 }
 
-char XorTitkosito::get_key() const {
+char XorEncryptor::get_key() const {
     return key;
 }
 
-char XorTitkosito::encode(char c) const {
+char XorEncryptor::encode(char c) const {
     return (c ^ key);
 }
 
-char XorTitkosito::decode(char c) const {
+char XorEncryptor::decode(char c) const {
     return encode(c);  // a xor a sajat ellentete
 }
 
-XorTitkosito XorTitkosito::operator-() const {
-    return XorTitkosito(key);
+XorEncryptor XorEncryptor::operator-() const {
+    return XorEncryptor(key);
 }
 
-Titkosito* XorTitkosito::clone() const {
-    return new XorTitkosito(key);
+Encryptor* XorEncryptor::clone() const {
+    return new XorEncryptor(key);
 }
 
-//////////////////////////////////////////////////////////
 
-ShiftTitkosito::ShiftTitkosito(int eltolas): shift(eltolas) {}
+/*Code for ShiftEncryptor*/
+ShiftEncryptor::ShiftEncryptor(int eltolas): shift(eltolas) {}
 
-void ShiftTitkosito::set_shift(int eltolas) {
+void ShiftEncryptor::set_shift(int eltolas) {
     this->shift = eltolas;
 }
 
-char ShiftTitkosito::get_shift() const {
+char ShiftEncryptor::get_shift() const {
     return shift;
 }
 
-char ShiftTitkosito::encode(char c) const {
-    if (!valid(static_cast<int>(c))) {
+char ShiftEncryptor::encode(char c) const {
+    if (!isValidInput(static_cast<int>(c))) {
         return c;
     } else {
         int kep = static_cast<int>(c) + shift;
-        return tartomanyba(kep);
+        return shiftIntoScope(kep);
     }
 }
 
-char ShiftTitkosito::decode(char c) const {
+char ShiftEncryptor::decode(char c) const {
     if (c < '0' || c > 'z') {
         return c;
     } else {
         int kep = static_cast<int>(c) - shift;
-        return tartomanyba(kep);
+        return shiftIntoScope(kep);
     }
 }
 
-ShiftTitkosito ShiftTitkosito::operator-() const {
-    return ShiftTitkosito(-shift);
+ShiftEncryptor ShiftEncryptor::operator-() const {
+    return ShiftEncryptor(-shift);
 }
 
-Titkosito* ShiftTitkosito::clone() const {
-    return new ShiftTitkosito(shift);
+Encryptor* ShiftEncryptor::clone() const {
+    return new ShiftEncryptor(shift);
 }

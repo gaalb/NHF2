@@ -1,49 +1,48 @@
-#ifndef TITKOSITO_H
-#define TITKOSITO_H
+#ifndef ENCRYPTOR_H
+#define ENCRYPTOR_H
 
-#include "string.h"
+#include "String.h"
 
 #include "memtrace.h"
 
-class Titkosito {
+class Encryptor {
 protected:
-    char tartomanyba(int c) const;
-    bool valid(int c) const; 
+    char shiftIntoScope(int c) const;
+    bool isValidInput(int c) const; 
 public:
     virtual char encode(char c) const = 0;
     String encode(const String& str) const;
     virtual char decode(char c) const = 0;
     String decode(const String& str) const;
-    virtual Titkosito* clone() const = 0;
-    virtual ~Titkosito();
+    virtual Encryptor* clone() const = 0;
+    virtual ~Encryptor();
 };
 
-class XorTitkosito: public Titkosito {
+class XorEncryptor: public Encryptor {
 private:
     char key;
 public:
-    XorTitkosito(char key='\0');
+    XorEncryptor(char key='0');
     void set_key(char key);
     char get_key() const;
     char encode(char c) const;
     char decode(char c) const;
-    XorTitkosito operator-() const;
-    Titkosito* clone() const;
+    XorEncryptor operator-() const;
+    Encryptor* clone() const;
 };
 
-class ShiftTitkosito: public Titkosito {
+class ShiftEncryptor: public Encryptor {
 private:
     int shift;
 public:
-    ShiftTitkosito(int shift = 0);
+    ShiftEncryptor(int shift = 0);
     void set_shift(int shift);
     char get_shift() const;
     char encode(char c) const;
     char decode(char c) const;
-    ShiftTitkosito operator-() const;
-    Titkosito* clone() const;
+    ShiftEncryptor operator-() const;
+    Encryptor* clone() const;
 };
 
 
-
-#endif  // TITKOSITO_H
+#endif  // ENCRYPTOR_H
