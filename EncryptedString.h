@@ -17,46 +17,33 @@ public:
     }
 };
 
-class EncryptedString {
-private:
-    String password;
+class EncryptedString : public StringBase {
+private:    
     Encryptor* pEncryptor;
-    String str;    
+    String password;
     void checkPw(const String& pw) const;
+    void set_str(const StringBase& new_str);
 public:
     ~EncryptedString();
-    EncryptedString(const String& pw, const String& str = ""); //csak jelszo
-    EncryptedString(const String& pw, const String& str, const Encryptor& encr); //reference param   
-    EncryptedString(const String& pw, const String& str, Encryptor* pEncr);  //ptr param
-    EncryptedString(const EncryptedString& other);
+    EncryptedString(const Encryptor& encr, const String& pw, const char* str = ""); //
+    EncryptedString(Encryptor* pEncr, const String& pw, const char* str = ""); //
+    EncryptedString(const Encryptor& encr, const String& pw, const char c); //
+    EncryptedString(Encryptor* pEncr, const String& pw, const char c); //
+    EncryptedString(const Encryptor& encr, const String& pw, const String& str); //
+    EncryptedString(Encryptor* pEncr, const String& pw, const String& str); //
+    EncryptedString(const EncryptedString& other); //
+
+    EncryptedString& operator=(const StringBase& right) override;
     EncryptedString& operator=(const EncryptedString& right);
-    EncryptedString& operator=(const String& right);
+
+    EncryptedString& operator+=(const String& str);
+
     void set_pw(const String& new_pw, const String& old_pw);
     String decode(const String& pw) const;
-    EncryptedString& operator+=(const String& str);
-    const char* c_str() const;
-    char& operator[](const size_t idx);
-    const char& operator[]( const size_t idx) const;
+    
     void setEncryptor(const Encryptor& enc, const String& pw); //reference param
     void setEncryptor(Encryptor* pEnc, const String& pw); //ptr param
-    class iterator {
-    private:
-        String::iterator it;
-    public:
-        iterator();
-        iterator(String::iterator it);
-        iterator& operator++();
-        iterator operator++(int);
-        char& operator*() const;
-        char* operator->() const;
-        bool operator==(const iterator& other) const;
-        bool operator!=(const iterator& other) const;
-    };
-    iterator begin();
-    iterator end();
-
 };
 
-std::ostream& operator<<(std::ostream& os, const EncryptedString& str);
 
 #endif // ENCRYPTED_STRING_H

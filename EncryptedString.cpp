@@ -1,4 +1,5 @@
 #include "EncryptedString.h"
+#include <cstring>
 
 #include "memtrace.h"
 
@@ -6,36 +7,64 @@ EncryptedString::~EncryptedString() {
     delete pEncryptor;
 }
 
-EncryptedString::EncryptedString(const String& pw, const String& str):
-    password(pw),
-    pEncryptor(new ShiftEncryptor(0)),
-    str(pEncryptor->encode(str)) {}
+void EncryptedString::set_str(const StringBase& new_str) {
+    len = new_str.get_len();
+    delete[] str;
+    str = new char[len+1];
+    strcpy(str, new_str.c_str());
+}
 
-EncryptedString::EncryptedString(const String& pw, const String& str, const Encryptor& encr):
-    password(pw),
+EncryptedString::EncryptedString(const Encryptor& encr, const String& pw, const char* str):
+    StringBase(str),
     pEncryptor(encr.clone()),
-    str(pEncryptor->encode(str)) {}
+    password(pw) {set_str(pEncryptor->encode(str));}
 
-EncryptedString::EncryptedString(const String& pw, const String& str, Encryptor* pEncr):
-    password(pw),
+EncryptedString::EncryptedString(Encryptor* pEncr, const String& pw, const char* str):
+    StringBase(str),
     pEncryptor(pEncr),
-    str(pEncryptor->encode(str)) {}
+    password(pw) {set_str(pEncryptor->encode(str));}
+
+EncryptedString::EncryptedString(const Encryptor& encr, const String& pw, const char c):
+    StringBase(c),
+    pEncryptor(encr.clone()),
+    password(pw) {set_str(pEncryptor->encode(str));}
+
+EncryptedString::EncryptedString(Encryptor* pEncr, const String& pw, const char c):
+    StringBase(c),
+    pEncryptor(pEncr),
+    password(pw) {set_str(pEncryptor->encode(str));}
+
+EncryptedString::EncryptedString(const Encryptor& encr, const String& pw, const String& str):
+    StringBase(str),
+    pEncryptor(encr.clone()),
+    password(pw) {set_str(pEncryptor->encode(str));}
+
+EncryptedString::EncryptedString(Encryptor* pEncr, const String& pw, const String& str):
+    StringBase(str),
+    pEncryptor(pEncr),
+    password(pw) {set_str(pEncryptor->encode(str));}
 
 EncryptedString::EncryptedString(const EncryptedString& other): 
-    password(other.password),
+    StringBase(other),
     pEncryptor(other.pEncryptor->clone()),
-    str(other.str) {}
+    password(other.password) {}
+
+EncryptedString& EncryptedString::operator=(const StringBase& right) {
+    set_str(pEncryptor->encode(right));
+    return *this;
+}
 
 EncryptedString& EncryptedString::operator=(const EncryptedString& right) {
-    password = right.password;
-    str = right.str;
+    password = right.password; 
+    set_str(right);
     delete pEncryptor;
     pEncryptor = right.pEncryptor->clone();
     return *this;
 }
 
-EncryptedString& EncryptedString::operator=(const String& right) {
-    str = pEncryptor->encode(right);
+EncryptedString& EncryptedString::operator+=(const String& str) {
+    String additional = pEncryptor->encode(str);
+    set_str(this->str + additional);
     return *this;
 }
 
@@ -53,27 +82,6 @@ String EncryptedString::decode(const String& pw) const {
     return pEncryptor->decode(str);
 }
 
-EncryptedString& EncryptedString::operator+=(const String& str) {
-    this->str += pEncryptor->encode(str);
-    return *this;
-}
-
-const char* EncryptedString::c_str() const {
-    return str.c_str();
-}
-
-char& EncryptedString::operator[](const size_t idx) {
-    return str[idx];
-}
-
-const char& EncryptedString::operator[](const size_t idx) const {
-    return str[idx];
-}
-
-std::ostream& operator<<(std::ostream& os, const EncryptedString& str) {
-    os << str.c_str();
-    return os;
-}
 
 void EncryptedString::setEncryptor(const Encryptor& enc, const String& pw) {
     checkPw(pw);
@@ -85,46 +93,6 @@ void EncryptedString::setEncryptor(Encryptor* pEnc, const String& pw) {
     checkPw(pw);
     delete pEncryptor;
     pEncryptor = pEnc;
-}
-
-//stuff for the iterator
-EncryptedString::iterator::iterator(): it() {}
-
-EncryptedString::iterator::iterator(String::iterator it): it(it) {}
-
-EncryptedString::iterator& EncryptedString::iterator::operator++() {
-    ++it;
-    return *this;
-}
-
-EncryptedString::iterator EncryptedString::iterator::operator++(int) {
-    iterator masolat = *this;
-    ++(*this);
-    return masolat;
-}
-
-char& EncryptedString::iterator::operator*() const {
-    return *it;
-}
-
-char* EncryptedString::iterator::operator->() const {
-    return it.operator->();
-}
-
-bool EncryptedString::iterator::operator==(const iterator& other) const {
-    return it == other.it;
-}
-
-bool EncryptedString::iterator::operator!=(const iterator& other) const {
-    return it != other.it;
-}
-
-EncryptedString::iterator EncryptedString::begin() {
-    return iterator(str.begin());
-}
-
-EncryptedString::iterator EncryptedString::end() {
-    return iterator(str.end());
 }
 
 

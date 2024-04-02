@@ -1,6 +1,7 @@
 #ifndef ENCRYPTOR_H
 #define ENCRYPTOR_H
 
+#include "StringBase.h"
 #include "String.h"
 
 #include "memtrace.h"
@@ -43,6 +44,5 @@ public:
     ShiftEncryptor operator-() const;
     Encryptor* clone() const;
 };
-
 
 #endif  // ENCRYPTOR_H

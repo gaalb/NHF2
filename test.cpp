@@ -1,3 +1,4 @@
+#include "StringBase.h"
 #include "String.h"
 #include "Encryptor.h"
 #include "EncryptedString.h"
@@ -22,6 +23,7 @@ int main(void) {
         EXPECT_EQ(static_cast<size_t>(5), str.get_len()) << "Nem jo a c_string konstruktor" << endl;
         EXPECT_STREQ(c_str, str.c_str()) << "Nem jo a betu konstruktor" << endl;
     } ENDM
+   
     String iter_str("Hello there, General Kenobi!");
     String::iterator iter;
     for (iter = iter_str.begin(); iter != iter_str.end(); ++iter) {
@@ -34,10 +36,11 @@ int main(void) {
         char kodolva = t1.encode(elem);
         cout << "betu: " << elem << ", titkositva: " << kodolva << ", dekodolva: " << t1.decode(kodolva) << endl;
     }
-    EncryptedString t_str("pw", s1, t1);
+    EncryptedString t_str(t1, "pw", s1);
     cout << "titkosítva: " << t_str << endl;
     t_str += "xyz ABC XYZ";
     cout << "titkosítva: " << t_str << endl;
     cout <<"eredeti: " << t_str.decode("pw") << endl;
+    
     return 0;
 }

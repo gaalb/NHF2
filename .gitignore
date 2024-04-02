@@ -6,3 +6,4 @@ latex/
 *.tmp
 *.zip
 *.exe
+before_stringbase/
