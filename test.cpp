@@ -31,7 +31,7 @@ int main(void) {
         cout << *iter;
     }
     cout << endl << endl;
-    ShiftEncryptor t1(100);
+    ShiftEncryptor t1(6);
     String s1("01 89 abc");
     for (auto elem : s1) {
         char kodolva = t1.encode(elem);
@@ -43,9 +43,37 @@ int main(void) {
     cout << "titkosítva: " << t_str << endl;
     cout <<"eredeti: " << t_str.decode("pw") << endl;
     ShiftEncryptor t2(5);
-    EncryptorList lst;
-    lst.append(t1);
-    lst.append(t2);
-    cout << "s1: " << s1 << ", encode: " << lst.encode(s1) << ", decode: " << lst.decode(lst.encode(s1)) << endl; 
+    ShiftEncryptor t3(10);
+    EncryptorList lst1;
+    lst1.append(t1);
+    lst1.append(t2);
+    lst1.append(t3);
+    cout << "s1: " << s1 << ", encoded: " << lst1.encode(s1) << ", decoded: " << lst1.decode(lst1.encode(s1)) << endl; 
+
+    EncryptorList lst2(lst1);
+    cout << "s1: " << s1 << ", encoded: " << lst2.encode(s1) << ", decoded: " << lst2.decode(lst2.encode(s1)) << endl; 
+
+    EncryptorList lst3;
+    lst3 = lst1;
+    cout << "s1: " << s1 << ", encoded: " << lst3.encode(s1) << ", decoded: " << lst3.decode(lst3.encode(s1)) << endl; 
+
+    EncryptorList lst4;
+    lst4 = -lst1;
+    cout << "s1: " << s1 << ", encoded: " << lst1.encode(s1) << ", inversed: " << lst4.encode(lst1.encode(s1)) << endl;
+
+    Encryptor* p_st = lst1.cloneInverse();
+    cout << "s1: " << s1 << ", encoded: " << lst1.encode(s1) << ", inversed: " << p_st->encode(lst1.encode(s1)) << endl;
+    delete p_st;
+
+    //please PLEASE
+    EncryptorList lst5;  //t1 -> t2 -> lst4
+    lst5.append(t1);
+    lst5.append(t2);
+    lst5.append(lst4);
+    lst5 = -lst5 + lst1 - t3;
+    cout << "s1: " << s1 << ", encoded: " << lst5.encode(s1) << ", inversed: " << lst5.decode(lst5.encode(s1)) << endl;
+
+    
+
     return 0;
 }

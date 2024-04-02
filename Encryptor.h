@@ -16,6 +16,7 @@ public:
     virtual char decode(char c) const = 0;
     String decode(const String& str) const;
     virtual Encryptor* clone() const = 0;
+    virtual Encryptor* cloneInverse() const = 0;
     virtual ~Encryptor();
 };
 
@@ -28,10 +29,11 @@ public:
     XorEncryptor(char key='0');
     void set_key(char key);
     char get_key() const;
-    char encode(char c) const;
-    char decode(char c) const;
+    char encode(char c) const override;
+    char decode(char c) const override;
     XorEncryptor operator-() const;
-    Encryptor* clone() const;
+    Encryptor* clone() const override;
+    Encryptor* cloneInverse() const override;
 };
 
 class ShiftEncryptor: public Encryptor {
@@ -43,10 +45,11 @@ public:
     ShiftEncryptor(int shift = 0);
     void set_shift(int shift);
     char get_shift() const;
-    char encode(char c) const;
-    char decode(char c) const;
+    char encode(char c) const override;
+    char decode(char c) const override;
     ShiftEncryptor operator-() const;
-    Encryptor* clone() const;
+    Encryptor* clone() const override;
+    Encryptor* cloneInverse() const override;
 };
 
 #endif  // ENCRYPTOR_H

@@ -21,6 +21,9 @@ public:
     using Encryptor::encode;  //avoid name hiding
     using Encryptor::decode;  //avoid name hiding
     EncryptorList();
+    EncryptorList(const EncryptorList& other);
+    EncryptorList& operator=(const EncryptorList& other); 
+    ~EncryptorList();
     class iterator {
     private:
         Node* current;
@@ -41,12 +44,15 @@ public:
     iterator rEnd() const;  //reverse
     void append(const Encryptor& encr);
     void append(Encryptor* pEncr);
-    ~EncryptorList();
-
     Encryptor* clone() const override;
+    Encryptor* cloneInverse() const override;
     char encode(char c) const override;
     char decode(char c) const override;
-    
+    EncryptorList operator-();    
 };
+
+EncryptorList operator+(const Encryptor& e1, const Encryptor& e2);
+
+EncryptorList operator-(const Encryptor& e1, const Encryptor& e2);
 
 #endif //ENCRYPTOR_LIST_H

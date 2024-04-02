@@ -18,21 +18,18 @@ void printAsBinary(const T& value) {
 Encryptor::~Encryptor() {}
 
 bool Encryptor::isValidInput(int c) const {
-    if (c >= static_cast<int>('0') && c <= static_cast<int>('9')) {
-        return true;  //0 és 9 közötti 
-    }
-    if (c >= static_cast<int>('A') && c <= static_cast<int>('Z')) {
-        return true; //nagy betű
-    }
-    if (c >= static_cast<int>('a') && c <= static_cast<int>('z')) {
-        return true; //kis betű
+
+    if (c >= static_cast<int>('0') && c <= static_cast<int>('}')) {
+        return true; 
+    } else {
+        return false;
     }
     return false;
 }
 
 char Encryptor::shiftIntoScope(int c) const {
-    int width = static_cast<int>('z') - static_cast<int>('0') + 1;
-    while (c > static_cast<int>('z')) {
+    int width = static_cast<int>('}') - static_cast<int>('0') + 1;
+    while (c > static_cast<int>('}')) {
         c -= width;
     }
     while (c < static_cast<int>('0'))
@@ -47,6 +44,7 @@ String Encryptor::encode(const String& str) const {
     for (String::iterator iter = ret.begin(); iter != ret.end(); ++iter) {
         *iter = this->encode(static_cast<char>(*iter));
     }
+    //std::cout << "ENCODE: " << str << " => " << ret << std::endl;
     return ret;
 }
 
@@ -55,6 +53,7 @@ String Encryptor::decode(const String& str) const {
     for (String::iterator iter = ret.begin(); iter != ret.end(); ++iter) {
         *iter = this->decode(static_cast<char>(*iter));
     }
+    //std::cout << "DECODE: " << str << " => " << ret << std::endl;
     return ret;
 }
 
@@ -85,6 +84,10 @@ Encryptor* XorEncryptor::clone() const {
     return new XorEncryptor(key);
 }
 
+Encryptor* XorEncryptor::cloneInverse() const {
+    return new XorEncryptor(key);
+}
+
 
 /*Code for ShiftEncryptor*/
 ShiftEncryptor::ShiftEncryptor(int eltolas): shift(eltolas) {}
@@ -107,7 +110,7 @@ char ShiftEncryptor::encode(char c) const {
 }
 
 char ShiftEncryptor::decode(char c) const {
-    if (c < '0' || c > 'z') {
+    if (!isValidInput(static_cast<int>(c))) {
         return c;
     } else {
         int kep = static_cast<int>(c) - shift;
@@ -121,4 +124,8 @@ ShiftEncryptor ShiftEncryptor::operator-() const {
 
 Encryptor* ShiftEncryptor::clone() const {
     return new ShiftEncryptor(shift);
+}
+
+Encryptor* ShiftEncryptor::cloneInverse() const {
+    return new ShiftEncryptor(-shift);
 }
