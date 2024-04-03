@@ -8,6 +8,8 @@
 
 class Encryptor {
 protected:
+    static char first_char;
+    static char last_char;
     char shiftIntoScope(int c) const;
     bool isValidInput(int c) const; 
 public:

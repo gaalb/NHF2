@@ -130,7 +130,42 @@ int main(void) {
         }
         EXPECT_STREQ("1234", s2.c_str()) << "iterator helytelen!" << endl;
     } ENDM    
-    
+
+    TEST(ShiftEncryptor, encode) {
+        ShiftEncryptor shift0;
+        ShiftEncryptor shift10(10);
+        ShiftEncryptor inv_shift10 = -shift10;
+        Encryptor* p_inv_shift10 = shift10.cloneInverse();
+        Encryptor* p_shift10 = shift10.clone();
+        char first = '(';
+        char last = '}';
+        EXPECT_EQ(first, shift0.encode(first)) << "kodolasi hiba" << endl;
+        EXPECT_EQ('2', shift10.encode(first)) << "kodolasi hiba" << endl;
+        EXPECT_EQ('t', inv_shift10.encode(first)) << "kodolasi hiba" << endl;
+        EXPECT_EQ('t', p_inv_shift10->encode(first)) << "kodolasi hiba" << endl;
+        EXPECT_EQ('2', p_shift10->encode(first)) << "kodolasi hiba" << endl;
+
+        EXPECT_EQ('1', shift10.encode(last)) << "kodolasi hiba" << endl;
+        EXPECT_EQ('s', inv_shift10.encode(last)) << "kodolasi hiba" << endl;
+        EXPECT_EQ('s', p_inv_shift10->encode(last)) << "kodolasi hiba" << endl;
+        EXPECT_EQ('1', p_shift10->encode(last)) << "kodolasi hiba" << endl;
+
+        delete p_inv_shift10;
+        delete p_shift10;
+    } ENDM
+
+    TEST(ShiftEncryptor, decode) {
+        ShiftEncryptor enc(234566);
+        Encryptor* inv_enc = enc.cloneInverse();
+        char c = ']';
+        EXPECT_EQ(c, enc.decode(enc.encode(c))) << "dekodolasi hiba" << endl;
+        EXPECT_EQ(c, enc.encode(enc.decode(c))) << "dekodolasi hiba" << endl;
+        EXPECT_EQ(c, enc.encode((-enc).encode(c))) << "dekodolasi hiba" << endl;
+        EXPECT_EQ(c, enc.decode((-enc).decode(c))) << "dekodolasi hiba" << endl;
+        EXPECT_EQ(enc.encode(c), inv_enc->decode(c)) << "dekodolasi hiba" << endl;
+        EXPECT_EQ(enc.decode(c), inv_enc->encode(c)) << "dekodolasi hiba" << endl;
+        delete inv_enc;
+    } ENDM
    
     String iter_str("Hello there, General Kenobi!");
     String::iterator iter;
