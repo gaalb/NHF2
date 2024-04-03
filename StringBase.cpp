@@ -3,21 +3,22 @@
 #include <stdexcept>
 
 #include "memtrace.h" //utoljára includeoljuk
-
 size_t StringBase::get_len() const {
     return len;
 }
 
 const char* StringBase::c_str() const {
-    return str;
+    return str;  //pointer a din. foglalt karaktertömbre
 }
 
 StringBase::~StringBase() {
-    delete[] str;
+    delete[] str;  //dinamikusan foglalt -> fel kell szabadítani
 }
 
+/*inicializáló listán ki van használva, hogy mivel len volt előbb deklarálva a headerben, előbb 
+lesz inicializálva, és str inicializálásakor felhasználhatjuk (ez a későbbi ctorokban is így van)*/
 StringBase::StringBase(const char* str): len(strlen(str)), str(new char[len+1]) {
-    strcpy(this->str, str);
+    strcpy(this->str, str);  //hely le van foglalva, be kell másolni
 }
 
 StringBase::StringBase(const char c): len(1), str(new char[len+1]) {
@@ -43,6 +44,32 @@ const char& StringBase::operator[](const size_t idx) const {
     return str[idx];
 }
 
+bool StringBase::operator==(const char c) const {
+    char rhs[2];
+    rhs[0] = c;
+    rhs[1] = '\0';
+    return strcmp(str, rhs) == 0;
+}
+
+bool StringBase::operator!=(const char c) const {
+    char rhs[2];
+    rhs[0] = c;
+    rhs[1] = '\0';
+    return strcmp(str, rhs) != 0;
+}
+
+bool StringBase::operator==(const char* rhs) const {
+    return strcmp(str, rhs) == 0;
+}
+
+bool StringBase::operator!=(const char* rhs) const {
+    return strcmp(str, rhs) != 0;
+}
+
+/*létezik StringBase& típusú == és != operátor, de ezek nem
+megfelelőek olyankor, ha char és char* a jobboldal, mert 
+nem lehet char/char*-ot StringBase-vé konvertálni, hiába van
+erre megfelelő konstrukor, ugyanis absztrakt osztály!*/
 bool StringBase::operator==(const StringBase& rhs) const {
     return strcmp(str, rhs.str) == 0;
 }
@@ -51,16 +78,19 @@ bool StringBase::operator!=(const StringBase& rhs) const {
     return strcmp(str, rhs.str) != 0;
 }
 
-//iterator:
+//az iterátor privát adattagja char* típusú
 StringBase::iterator::iterator(char* ptr): ptr(ptr) {}
 
-StringBase::iterator& StringBase::iterator::operator++() {
-    if (*ptr != '\0') {
+StringBase::iterator& StringBase::iterator::operator++() { //preinkremens: ++iter
+    if (*ptr != '\0') {  //ha lezáró nullára mutat, már nincs értelme léptepni
         ++ptr;
     }
-    return *this;
+    return *this;  //eredetire referencia
 }
 
+/*a posztinkremens operátort abból ismeri meg a fordító, hogy van egy dummy int paramétere
+mivel vissza kell adni egy iterátort, és csak aztán megváltoztatni, nem adhatunk az eredeti
+iterátorra referenciát: másolatot kell vissza adni, és a return is iterator, iterator& helyett*/
 StringBase::iterator StringBase::iterator::operator++(int) {
     iterator masolat = *this;
     ++(*this);
@@ -68,12 +98,13 @@ StringBase::iterator StringBase::iterator::operator++(int) {
 }
 
 char& StringBase::iterator::operator*() const {
-    return *ptr;
+    return *ptr;  //a belső pointer által mutatott karaktert adjuk vissza
 }
 
 char* StringBase::iterator::operator->() const {
-    return ptr;
+    return ptr; // a -> operátor amit visszaad, dereferálja a compiler: a pointert adjuk vissza!
 }
+
 
 bool StringBase::iterator::operator==(const StringBase::iterator& rhs) const {
     return ptr == rhs.ptr;
@@ -91,7 +122,8 @@ StringBase::iterator StringBase::end() {
     return iterator(str + len);
 }
 
-//const iterator:
+/*const_iterator: konstans objektumokon ez hívható meg, ezen keresztül nem
+módosítható a tároló*/
 StringBase::const_iterator::const_iterator(char* ptr): ptr(ptr) {}
 
 StringBase::const_iterator& StringBase::const_iterator::operator++() {
@@ -107,11 +139,11 @@ StringBase::const_iterator StringBase::const_iterator::operator++(int) {
     return masolat;
 }
 
-const char& StringBase::const_iterator::operator*() const { // const !
+const char& StringBase::const_iterator::operator*() const { // const char& !
     return *ptr;
 }
 
-const char* StringBase::const_iterator::operator->() const { // const return!
+const char* StringBase::const_iterator::operator->() const { // const char* !
     return ptr;
 }
 
@@ -123,11 +155,19 @@ bool StringBase::const_iterator::operator!=(const StringBase::const_iterator& rh
     return ptr != rhs.ptr;
 }
 
+/*konstans tagfüggvény
+Ha nem lenne külön const_iterator, akkor iterator-nál is lehetne a begin és az end const, 
+hiszen azok nem változtatják a tároló állapotát, viszont akkor ez nem lehetne const, mert
+akkor csak a return type választaná el az iterator és a const_iterator-ral visszatérő
+begin és end függvényt, márpedig csupán visszatéréssel nem lehet overloadolni. Így, hogy
+ezek const-ok, az iterator-ral visszatérők pedig nem, így a const-ság overloadol, és eltérő
+tud lenni a return*/
 StringBase::const_iterator StringBase::begin() const{ //const (iterator-nal is lehetne const, de ez az overloadhoz kell, mert csupán visszatéréssel nem lehet overloadolni)
     return const_iterator(str);
 }
 
-StringBase::const_iterator StringBase::end() const { //const (iterator-nal is lehetne const, de ez az overloadhoz kell, mert csupán visszatéréssel nem lehet overloadolni)
+//const!
+StringBase::const_iterator StringBase::end() const {
     return const_iterator(str + len);
 }
 

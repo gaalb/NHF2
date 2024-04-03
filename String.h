@@ -8,13 +8,13 @@
 
 class String : public StringBase{  
 public:
-    String(const char* str = "");  //also default ctor
+    String(const char* str = "");
     String(const char c);
     String(const StringBase& other);
     String& operator=(const StringBase& rhs) override;
     String& operator=(const String& rhs);
     String operator+(const String& rhs) const; 
-    String& operator+=(const StringBase& str);     
+    String& operator+=(const String& str);   
 };
 
 String operator+(const char c, const String& str);

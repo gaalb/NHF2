@@ -12,7 +12,6 @@ String::String(const char c): StringBase(c) {}
 String::String(const StringBase& other): StringBase(other) {}
 
 String& String::operator=(const StringBase& rhs) {
-    //throw error? not sure
     if (this != &rhs) {
         delete[] str;
         len = rhs.get_len();
@@ -22,6 +21,11 @@ String& String::operator=(const StringBase& rhs) {
     return *this; 
 }
 
+/*Elvileg ha az alábbi függvényeket (melyek const String&-et 
+vesznek át) egy char, char* vagy StringBase& argumentummal
+hívjuk meg, mivel van megfelelő konstruktor, át tudja konvertálni
+Stringgé a char vagy char*-t. Ennek ellenére az én IDE-m az ilyen
+felhasználásnál panaszkodik (hiába fordul a program).*/
 String& String::operator=(const String& rhs) {
     if (this != &rhs) {
         delete[] str;
@@ -42,7 +46,7 @@ String String::operator+(const String& rhs) const {
     return ret;
 }
 
-String& String::operator+=(const StringBase& str) {
+String& String::operator+=(const String& str) {
     *this = *this + str;
     return *this;
 }

@@ -19,7 +19,11 @@ public:
     StringBase(const StringBase& other);
     char& operator[](const size_t idx);
     const char& operator[](const size_t idx) const;
-    virtual StringBase& operator=(const StringBase& rhs) = 0;
+    virtual StringBase& operator=(const StringBase& rhs) = 0;    
+    bool operator==(const char c) const;
+    bool operator!=(const char c) const;
+    bool operator==(const char* rhs) const;
+    bool operator!=(const char* rhs) const;
     bool operator==(const StringBase& rhs) const;
     bool operator!=(const StringBase& rhs) const;
 
