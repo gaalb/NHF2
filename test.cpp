@@ -4,6 +4,8 @@
 #include "EncryptorList.h"
 #include "EncryptedString.h"
 #include <sstream>
+#include <ctime>
+#include <cstdlib>
 
 #include "gtest_lite.h"
 #include "memtrace.h"
@@ -12,6 +14,7 @@
 using std::endl;
 using std::cout;
 int main(void) {
+    srand(static_cast<unsigned>(time(nullptr)));
     TEST(String, default_ctor) {
         String ures;
         EXPECT_EQ(static_cast<size_t>(0), ures.get_len()) << "A default ctor nem 0 hosszt ad!" << endl;
@@ -128,7 +131,7 @@ int main(void) {
         const String s1("Hello there! General Kenobi!");
         String s2;
         //const String-en const_iterator!
-        for (String::const_iterator iter = s1.begin(); iter != s1.end(); iter++) {
+        for (String::const_iterator iter = s1.begin(); iter != s1.end(); iter++) { //posztinkremens
             s2 += *iter;
         }
         EXPECT_STREQ(s1.c_str(), s2.c_str()) << "const_iterator helytelen!" << endl;
@@ -167,15 +170,87 @@ int main(void) {
         ShiftEncryptor enc(234566);
         Encryptor* inv_enc = enc.cloneInverse();
         char c = ']';
+        String NiceString = "NiceString!";
         EXPECT_EQ(c, enc.decode(enc.encode(c))) << "dekodolasi hiba" << endl;
         EXPECT_EQ(c, enc.encode(enc.decode(c))) << "dekodolasi hiba" << endl;
         EXPECT_EQ(c, enc.encode((-enc).encode(c))) << "dekodolasi hiba" << endl;
         EXPECT_EQ(c, enc.decode((-enc).decode(c))) << "dekodolasi hiba" << endl;
         EXPECT_EQ(enc.encode(c), inv_enc->decode(c)) << "dekodolasi hiba" << endl;
         EXPECT_EQ(enc.decode(c), inv_enc->encode(c)) << "dekodolasi hiba" << endl;
+        EXPECT_STREQ("NiceString!", enc.encode(enc.decode(NiceString)).c_str()) << "dekodolasi hiba" << endl;
+        EXPECT_STREQ("NiceString!", inv_enc->encode(enc.encode(NiceString)).c_str()) << "dekodolasi hiba" << endl;
         delete inv_enc;
     } ENDM
-   
+
+    TEST(RandEncryptor, encode/decode) {
+        RandEncryptor enc;
+        String str = "Hello there! General Kenobi!";
+        String str_encoded = enc.encode(str);
+        String::iterator iter1, iter2;
+        for (iter1 = str.begin(), iter2 = str_encoded.begin();iter1 != str.end(), iter2 != str_encoded.end(); ++iter1, ++iter2) {
+            if (*iter1 <= '}' && *iter1 >= '(') {
+                EXPECT_TRUE(*iter2 <= '}') << "kileptunk a tartomanybol!" << endl;
+                EXPECT_TRUE(*iter2 >= '(') << "kileptunk a tartomanybol!" << endl;
+            }            
+        }
+        EXPECT_STREQ(str.c_str(), enc.decode(str_encoded).c_str()) << "nem adja vissza az eredetit a dekoldolas" << endl;
+        RandEncryptor inv_enc;
+        inv_enc = -enc;
+        EXPECT_TRUE(enc.encode(str) == inv_enc.decode(str)) << "nem adja vissza az eredetit az inverz" << endl;
+        Encryptor* p_enc = enc.clone();
+        Encryptor* p_inv_enc = enc.cloneInverse();
+        EXPECT_STREQ(enc.encode(str).c_str(), p_enc->encode(str).c_str()) << "klonozas nem jo" << endl;
+        EXPECT_STREQ(inv_enc.encode(str).c_str(), p_inv_enc->encode(str).c_str()) << "inverz klonozas nem jo" << endl;
+        RandEncryptor other_enc;
+        EXPECT_FALSE(enc.encode(str) == enc.decode(str)) << "ugyanaz az encode mint a decode?" << endl;
+        EXPECT_FALSE(enc.encode(str) == other_enc.encode(str)) << "nem randomizal!" << endl;
+        delete p_enc;
+        delete p_inv_enc;
+    } ENDM
+
+    TEST(EncryptorList, encode/decode) {
+        EncryptorList lst;
+        EncryptorList sublist;
+        ShiftEncryptor shift1(1000);
+        ShiftEncryptor shift2(-5000);
+        ShiftEncryptor shift3(5);
+        RandEncryptor rand1;
+        RandEncryptor rand2;
+        RandEncryptor rand3;
+        lst += shift1; //lst: shift1
+        lst -= rand1.clone(); // lst: shift1 -> (-rand1) 
+        lst.append(-shift2); // lst: shift1 -> (-rand1) -> (-shift2)
+        lst = lst + rand2; // lst: shift1 -> (-rand1) -> (-shift2) -> rand2
+        sublist += shift3; // sublist: shift3
+        sublist -= rand3; // sublist: shift3 -> (-rand3), azaz -sublist = rand3 -> (-shift3)
+        lst = lst - sublist; // lst: shift1->(-rand1)->(-shift2)->rand2->(-sublist)=shift1->(-rand1)->(-shift2)->rand2->rand3->(-shift3)
+        String str = "Hello there! General Kenobi!";
+        String encoded = lst.encode(str);
+        String decoded = lst.decode(encoded);
+        EXPECT_FALSE(str == lst.encode(str)) << "Nem tortent kodolas!" << endl;
+        EXPECT_STREQ(str.c_str(), decoded.c_str()) << "Nem az inverze a dekodolas!" << endl;
+        String str2 = str;
+        str2 = shift1.encode(str2);
+        str2 = (-rand1).encode(str2);
+        str2 = (-shift2).encode(str2);
+        str2 = rand2.encode(str2);
+        str2 = rand3.encode(str2); //sublist
+        str2 = (-shift3).encode(str2); //sublist
+        EXPECT_STREQ(str2.c_str(), encoded.c_str()) << "Nem bomlik szet a megfelelo elemekre a lista!" << endl;
+        EncryptorList lst_copy(lst);
+        EXPECT_STREQ(lst.encode(str).c_str(), lst_copy.encode(str).c_str()) << "Nem jo a masolo ctor!" << endl;
+        EncryptorList lst_assign;
+        lst_assign.append(ShiftEncryptor(-1000000)); //nézzük meg felülíródik-e
+        lst_assign = lst_copy;
+        EXPECT_STREQ(lst.decode(str).c_str(), lst_assign.decode(str).c_str()) << "Nem jo az ertekadas operator!" << endl;
+        Encryptor* p_lst = lst.clone();
+        Encryptor* p_inv_lst = lst.cloneInverse();
+        EXPECT_STREQ(lst.encode(str).c_str(), p_lst->encode(str).c_str()) << "Nem jo a klonozas!" << endl;
+        EXPECT_STREQ((-lst).encode(str).c_str(), p_inv_lst->encode(str).c_str()) << "Nem jo az inverz klonozas!" << endl;
+        delete p_lst;
+        delete p_inv_lst;
+    } ENDM;
+   /*
     String iter_str("Hello there, General Kenobi!");
     String::iterator iter;
     for (iter = iter_str.begin(); iter != iter_str.end(); ++iter) {
@@ -224,7 +299,7 @@ int main(void) {
     lst5 = -lst5 + lst1 - t3;
     cout << "s1: " << s1 << ", encoded: " << lst5.encode(s1) << ", inversed: " << lst5.decode(lst5.encode(s1)) << endl;
 
-    
+    */
 
     return 0;
 }

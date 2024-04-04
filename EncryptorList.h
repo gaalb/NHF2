@@ -48,6 +48,10 @@ public:
     Encryptor* cloneInverse() const override;
     char encode(char c) const override;
     char decode(char c) const override;
+    EncryptorList& operator+=(const Encryptor& rhs);
+    EncryptorList& operator-=(const Encryptor& rhs);
+    EncryptorList& operator+=(Encryptor* rhs);  //nem biztos hogy ezt akarjuk, hogy létezzen
+    EncryptorList& operator-=(Encryptor* rhs);  //nem biztos hogy ezt akarjuk, hogy létezzen
     EncryptorList operator-();    
 };
 
