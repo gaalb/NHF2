@@ -11,7 +11,10 @@ public:
     String(const char* str = "");
     String(const char c);
     String(const StringBase& other);
-    String& operator=(const StringBase& rhs) override;
+    ~String();
+    String& operator=(const StringBase& rhs);
+    String& operator=(const char* rhs) override;
+    String& operator=(const char rhs) override;
     String& operator=(const String& rhs);
     String operator+(const String& rhs) const; 
     String& operator+=(const String& str);   

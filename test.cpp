@@ -52,6 +52,15 @@ int main(void) {
         String pw = "pw";
         EncryptedString s3(new ShiftEncryptor(1), pw, "12ABab"); //12ABab -> 23BCbc
         s2 = "Hello";
+        /*
+        Tesztelés közben a fenti sornál a következő hibát kapom (nem minden fordítónál, de néhánynál igen):
+        error: ambiguous overload for 'operator=' (operand types are 'String' and 'const char [6]')
+        Vagyis ezt a sort többféle képpen is tudja értelmezni. Személyesen én nem értem, mit lehet ezen
+        többféleképpen értelmezni. A stringeknek 2db operator=-je van, az egyik StringBase-é konvertálna,
+        a másik String-é. Mivel StringBase-é nem lehet konvertálni (olyat nem lehet példányosítani), ezért
+        csak 1db valid opció van. Elmélet: A fordító nem elég okos hogy ezt kitalálja, és nem tudja eldönteni
+        melyiket használja? Pedig elvileg minden információ rendelkezésére áll.
+        */
         s1 = s2 = s3;
         EXPECT_EQ(s1.get_len(), s3.get_len()) << "Az = operator nem megfelelo!" << endl;
         EXPECT_STREQ(s1.c_str(), s3.c_str()) << "Az = operator nem megfelelo!" << endl;

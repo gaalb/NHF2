@@ -110,7 +110,7 @@ Encryptor* ShiftEncryptor::cloneInverse() const {
 }
 
 /*Code for XorEncryptor (not a great encryptor for representation)*/
-XorEncryptor::XorEncryptor(char key): key(key) {};
+XorEncryptor::XorEncryptor(char key): key(key) {}
 
 void XorEncryptor::set_key(char key) {
     this->key = key;

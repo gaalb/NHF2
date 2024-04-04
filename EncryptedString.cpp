@@ -49,8 +49,19 @@ EncryptedString::EncryptedString(const EncryptedString& other):
     pEncryptor(other.pEncryptor->clone()),
     password(other.password) {}
 
-EncryptedString& EncryptedString::operator=(const StringBase& right) {
-    set_str(pEncryptor->encode(right));
+EncryptedString& EncryptedString::operator=(const StringBase& rhs) {
+    set_str(pEncryptor->encode(rhs));
+    return *this;
+}
+
+EncryptedString& EncryptedString::operator=(const  char* rhs) {
+    set_str(pEncryptor->encode(rhs));
+    return *this;
+}
+
+EncryptedString& EncryptedString::operator=(const  char rhs) {
+    char c_str[2] = {rhs, '\0'};
+    set_str(pEncryptor->encode(c_str));
     return *this;
 }
 

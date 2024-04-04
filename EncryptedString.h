@@ -33,8 +33,10 @@ public:
     EncryptedString(Encryptor* pEncr, const String& pw, const String& str); //
     EncryptedString(const EncryptedString& other); //
 
-    EncryptedString& operator=(const StringBase& right) override;
-    EncryptedString& operator=(const EncryptedString& right);
+    EncryptedString& operator=(const StringBase& rhs) override;
+    EncryptedString& operator=(const char* rhs) override;
+    EncryptedString& operator=(const char rhs) override;
+    EncryptedString& operator=(const EncryptedString& rhs);
 
     EncryptedString& operator+=(const String& str);
 

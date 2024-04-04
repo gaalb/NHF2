@@ -19,7 +19,12 @@ public:
     StringBase(const StringBase& other);
     char& operator[](const size_t idx);
     const char& operator[](const size_t idx) const;
-    virtual StringBase& operator=(const StringBase& rhs) = 0;    
+    /*Stringbase-eket logikusan muszáj tudni egymásnak értékül adni, hiszen
+    mind karaktertömböket tárolnak, azonban konkatenálás a kódolás miatt
+    bizonyos esetekben nem lesz majd megengedett.*/
+    virtual StringBase& operator=(const StringBase& rhs) = 0;
+    virtual StringBase& operator=(const char* rhs) = 0;
+    virtual StringBase& operator=(const char rhs) = 0;   
     bool operator==(const char c) const;
     bool operator!=(const char c) const;
     bool operator==(const char* rhs) const;
