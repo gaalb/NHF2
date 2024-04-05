@@ -250,56 +250,132 @@ int main(void) {
         delete p_lst;
         delete p_inv_lst;
     } ENDM;
-   /*
-    String iter_str("Hello there, General Kenobi!");
-    String::iterator iter;
-    for (iter = iter_str.begin(); iter != iter_str.end(); ++iter) {
-        cout << *iter;
-    }
-    cout << endl << endl;
-    ShiftEncryptor t1(6);
-    String s1("01 89 abc");
-    for (auto elem : s1) {
-        char kodolva = t1.encode(elem);
-        cout << "betu: " << elem << ", titkositva: " << kodolva << ", dekodolva: " << t1.decode(kodolva) << endl;
-    }
-    EncryptedString t_str(t1, "pw", s1);
-    cout << "titkosítva: " << t_str << endl;
-    t_str += "xyz ABC XYZ";
-    cout << "titkosítva: " << t_str << endl;
-    cout <<"eredeti: " << t_str.decode("pw") << endl;
-    ShiftEncryptor t2(5);
-    ShiftEncryptor t3(10);
-    EncryptorList lst1;
-    lst1.append(t1);
-    lst1.append(t2);
-    lst1.append(t3);
-    cout << "s1: " << s1 << ", encoded: " << lst1.encode(s1) << ", decoded: " << lst1.decode(lst1.encode(s1)) << endl; 
 
-    EncryptorList lst2(lst1);
-    cout << "s1: " << s1 << ", encoded: " << lst2.encode(s1) << ", decoded: " << lst2.decode(lst2.encode(s1)) << endl; 
+    ShiftEncryptor noEncr; 
+    RandEncryptor randEnc1;
+    RandEncryptor randEnc2;
+    ShiftEncryptor shiftEncr(500000);
+    EncryptorList sublst;
+    sublst = randEnc1 - randEnc2;
+    EncryptorList lst = shiftEncr + sublst;
+    String pw("pw");
 
-    EncryptorList lst3;
-    lst3 = lst1;
-    cout << "s1: " << s1 << ", encoded: " << lst3.encode(s1) << ", decoded: " << lst3.decode(lst3.encode(s1)) << endl; 
+    TEST(EncryptedString, char_ctor) {
+        char c = 'c';
+        EncryptedString encStr(lst, pw, c);
+        EXPECT_EQ(encStr.get_len(), static_cast<size_t>(1)) << "Hossz nem jo!" << endl;
+        EXPECT_STREQ(encStr.c_str(), lst.encode(String(c)).c_str()) << "Nem helyesen kodol!" << endl;
+    } ENDM
 
-    EncryptorList lst4;
-    lst4 = -lst1;
-    cout << "s1: " << s1 << ", encoded: " << lst1.encode(s1) << ", inversed: " << lst4.encode(lst1.encode(s1)) << endl;
+    TEST(EncryptedString, char*_ctor) {
+        char str[] = "Hello!";
+        EncryptedString encStr(lst, pw, str);
+        EXPECT_EQ(encStr.get_len(), static_cast<size_t>(6)) << "Hossz nem jo!" << endl;
+        EXPECT_STREQ(encStr.c_str(), lst.encode(String(str)).c_str()) << "Nem helyesen kodol!" << endl;
+    } ENDM
 
-    Encryptor* p_st = lst1.cloneInverse();
-    cout << "s1: " << s1 << ", encoded: " << lst1.encode(s1) << ", inversed: " << p_st->encode(lst1.encode(s1)) << endl;
-    delete p_st;
+    TEST(EncryptedString, string_ctor) {
+        String str = "Hello!";
+        EncryptedString encStr(lst, pw, str);
+        EXPECT_EQ(encStr.get_len(), static_cast<size_t>(6)) << "Hossz nem jo!" << endl;
+        EXPECT_STREQ(encStr.c_str(), lst.encode(String(str)).c_str()) << "Nem helyesen kodol!" << endl;
+    } ENDM
 
-    //please PLEASE
-    EncryptorList lst5;  //t1 -> t2 -> lst4
-    lst5.append(t1);
-    lst5.append(t2);
-    lst5.append(lst4);
-    lst5 = -lst5 + lst1 - t3;
-    cout << "s1: " << s1 << ", encoded: " << lst5.encode(s1) << ", inversed: " << lst5.decode(lst5.encode(s1)) << endl;
+    TEST(EncryptedString, copy_ctor) {
+        EncryptedString encStr1(lst, pw, "Copy ctor!");
+        EncryptedString encStr2 = encStr1;
+        EXPECT_EQ(encStr1.get_len(), encStr2.get_len()) << "Hossz nem jo!" << endl;
+        EXPECT_STREQ(encStr1.c_str(), encStr2.c_str()) << "Nem helyesen kodol!" << endl;
+    } ENDM
 
-    */
+    TEST(EncryptedString, operator!=/==) {
+        char c = 'C';
+        char c_str[] = "Hello!";
+        String str = "!Olleh";
+        EncryptedString encStr(lst, pw, c);
+        EXPECT_TRUE(lst.encode(c) == encStr) << "char==EncrypterString hibás" << endl;
+        EXPECT_TRUE(encStr == lst.encode(c)) << "EncrypterString==char hibás" << endl;
+        EXPECT_FALSE(lst.encode(c) != encStr) << "char!=EncrypterString hibás" << endl;
+        EXPECT_FALSE(encStr != lst.encode(c)) << "EncrypterString==char hibás" << endl;
 
+        encStr = EncryptedString(lst, pw, c_str);
+        EXPECT_TRUE(lst.encode(c_str) == encStr) << "char*==EncrypterString hibás" << endl;
+        EXPECT_TRUE(encStr == lst.encode(c_str)) << "EncrypterString==char* hibás" << endl;
+        EXPECT_FALSE(lst.encode(c_str) != encStr) << "char*!=EncrypterString hibás" << endl;
+        EXPECT_FALSE(encStr != lst.encode(c_str)) << "EncrypterString==char* hibás" << endl;
+
+        encStr = EncryptedString(lst, pw, str);
+        EXPECT_TRUE(lst.encode(str) == encStr) << "String==EncrypterString hibás" << endl;
+        EXPECT_TRUE(encStr == lst.encode(str)) << "EncrypterString==String hibás" << endl;
+        EXPECT_FALSE(lst.encode(str) != encStr) << "String!=EncrypterString hibás" << endl;
+        EXPECT_FALSE(encStr != lst.encode(str)) << "EncrypterString==String hibás" << endl;
+    } ENDM
+
+    TEST(EncryptedString, operator=) {
+        EncryptedString encStr1(lst, pw, "Copy ctor!");
+        EncryptedString encStr2 = EncryptedString(RandEncryptor(), "otherPw", "SomeString");
+        encStr2 = encStr1;
+        EXPECT_STREQ(encStr1.c_str(), encStr2.c_str()) << "Nem helyesen kodol!" << endl;
+        char c = '?';
+        encStr1 = c;
+        EXPECT_STREQ(encStr1.c_str(), lst.encode(String(c)).c_str()) << "Nem helyesen kodol!" << endl;
+        char c_str[] = "c string";
+        encStr1 = c_str;
+        EXPECT_STREQ(encStr1.c_str(), lst.encode(c_str).c_str()) << "Nem helyesen kodol!" << endl;
+        String str = "MyString";
+        encStr1 = str;
+        EXPECT_STREQ(encStr1.c_str(), lst.encode(str).c_str()) << "Nem helyesen kodol!" << endl;
+    } ENDM
+
+    TEST(EncryptedString, decode) {
+        String str = "Thank you EncryptedString! Very cool!";
+        EncryptedString encStr = EncryptedString(lst, pw, str);
+        EXPECT_FALSE(str == encStr) << "Nem tortent kodolas" << endl;
+        EXPECT_TRUE(lst.encode(str) == encStr) << "Nem helyesen kodol!" << endl;
+        EXPECT_THROW(encStr.decode("WrongPassword"), IncorrectPasswordException&) << "Nem dob hibat a rossz jelszo!" << endl;
+        EXPECT_TRUE(str == encStr.decode(pw)) << "Nem sikerult visszacsinalni a titkositast!" << endl;
+    } ENDM
+
+    TEST(EncryptedString, iterator) {
+        String str = "Thank you EncryptedString! Very cool!";
+        String encoded = lst.encode(str);
+        EncryptedString encStr(lst, pw, str);
+        String::iterator iter1;
+        EncryptedString::iterator iter2;
+        for (iter1 = encoded.begin(), iter2 = encStr.begin(); iter1 != encoded.end(), iter2 != encStr.end(); ++iter1, ++iter2) {
+            EXPECT_EQ(*iter1, *iter2) << "Nem jo elemekre mutatnak az iteratorok!" << endl;
+        }
+    } ENDM
+
+    TEST(EncryptedString, operator+=) {
+        String str = "Some men just want to watch the world burn. ";
+        char c_str[] = "Jporta";
+        char c = 'L';
+        EncryptedString encStr = EncryptedString(lst, pw);
+        EXPECT_TRUE("" == encStr) << "Nem ures string!" << endl;
+        encStr += str;
+        EXPECT_TRUE(lst.encode(str) == encStr) << "Nem helyes a konkatenalas" << endl;
+        encStr += c_str;
+        str += c_str;
+        EXPECT_TRUE(lst.encode(str) == encStr) << "Nem helyes a konkatenalas" << endl;
+        encStr += c;
+        str += c;
+        EXPECT_TRUE(lst.encode(str) == encStr) << "Nem helyes a konkatenalas" << endl;
+    } ENDM
+
+    TEST(EncryptedString, change_encryptor/change_pw) {
+        RandEncryptor encr;
+        String str = "12345678";
+        EncryptedString encStr = EncryptedString(lst, pw, str);
+        EXPECT_TRUE(encStr == lst.encode(str)) << "Nem jol jott letre az encrypted string!" << endl;
+        encStr.setEncryptor(encr, pw);
+        EXPECT_TRUE(encStr == encr.encode(str)) << "Nem allitodott at a kodolo" << endl;
+        EXPECT_TRUE(encStr.decode(pw) == str) << "Nem adja vissza az eredeti stringet az uj titkosito!" << endl;
+        String new_pw = "NewPassword";
+        EXPECT_THROW(encStr.set_pw(new_pw, "WrongPassword"), IncorrectPasswordException&) << "El lett fogadva a rossz jelszo!" << endl;
+        EXPECT_NO_THROW(encStr.set_pw(new_pw, pw)) << "Nem engedte atallitani a jelszot!" << endl;
+        EXPECT_THROW(encStr.decode(pw), IncorrectPasswordException&) << "El lett fogadva a rossz jelszo!" << endl;
+        EXPECT_NO_THROW(encStr.decode(new_pw)) << "Nem fogadta el a helyes jelszavat!" << endl;
+    } ENDM
     return 0;
 }

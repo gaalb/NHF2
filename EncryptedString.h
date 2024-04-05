@@ -11,10 +11,8 @@ class IncorrectPasswordException: public std::exception {
 private:
     String msg;
 public:
-    IncorrectPasswordException(const String& msg): msg(msg) {}
-    virtual const char* what() const noexcept override {
-        return msg.c_str();
-    }
+    IncorrectPasswordException(const String& msg);
+    virtual const char* what() const noexcept override;
 };
 
 class EncryptedString : public StringBase {

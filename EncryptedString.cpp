@@ -3,6 +3,12 @@
 
 #include "memtrace.h"
 
+IncorrectPasswordException::IncorrectPasswordException(const String& msg): msg(msg) {}
+
+const char* IncorrectPasswordException::what() const noexcept{
+    return msg.c_str();
+}
+
 EncryptedString::~EncryptedString() {
     delete pEncryptor;
 }
@@ -96,14 +102,20 @@ String EncryptedString::decode(const String& pw) const {
 
 void EncryptedString::setEncryptor(const Encryptor& enc, const String& pw) {
     checkPw(pw);
+    String decoded = decode(pw);    
     delete pEncryptor;
     pEncryptor = enc.clone();
+    String recoded = pEncryptor->encode(decoded);
+    strcpy(str, recoded.c_str());  //kihasználja, hogy karakterenként történik a kódolást, és a hossz megegyezik
 }
 
 void EncryptedString::setEncryptor(Encryptor* pEnc, const String& pw) {
     checkPw(pw);
+    String decoded = decode(pw); 
     delete pEncryptor;
     pEncryptor = pEnc;
+    String recoded = pEncryptor->encode(decoded);
+    strcpy(str, recoded.c_str());  //kihasználja, hogy karakterenként történik a kódolást, és a hossz megegyezik
 }
 
 
