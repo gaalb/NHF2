@@ -107,4 +107,3 @@ String operator+(const char c, const String& str) {
 String operator+(const char* left, const String& right) {
     return String(left) + right;
 }
-

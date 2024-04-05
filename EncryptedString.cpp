@@ -13,6 +13,7 @@ EncryptedString::~EncryptedString() {
     delete pEncryptor;
 }
 
+/*Ha megpróbálja valaki beállítani közvetlen a stringet, előtte titkosítjuk*/
 void EncryptedString::set_str(const StringBase& new_str) {
     len = new_str.get_len();
     delete[] str;
@@ -55,6 +56,8 @@ EncryptedString::EncryptedString(const EncryptedString& other):
     pEncryptor(other.pEncryptor->clone()),
     password(other.password) {}
 
+/*Az egyenlőséget a titkosított string alapján döntjük el, különben meg lehetne
+állapítani a rejtett adatot.*/
 EncryptedString& EncryptedString::operator=(const StringBase& rhs) {
     set_str(pEncryptor->encode(rhs));
     return *this;
@@ -79,6 +82,7 @@ EncryptedString& EncryptedString::operator=(const EncryptedString& right) {
     return *this;
 }
 
+/*A hozzá jövő extra részt előbb titkosítjuk*/
 EncryptedString& EncryptedString::operator+=(const String& str) {
     String additional = pEncryptor->encode(str);
     set_str(this->str + additional);
@@ -101,11 +105,11 @@ String EncryptedString::decode(const String& pw) const {
 
 
 void EncryptedString::setEncryptor(const Encryptor& enc, const String& pw) {
-    checkPw(pw);
-    String decoded = decode(pw);    
+    checkPw(pw);  //jelszó védett művelet
+    String decoded = decode(pw); //azt akarjuk hogy a dekódolt String változatlan maradjon: elmentjük
     delete pEncryptor;
-    pEncryptor = enc.clone();
-    String recoded = pEncryptor->encode(decoded);
+    pEncryptor = enc.clone(); //átállítjuk a titkosítót
+    String recoded = pEncryptor->encode(decoded); //és újra titkosítjuk a dekódolt stringet
     strcpy(str, recoded.c_str());  //kihasználja, hogy karakterenként történik a kódolást, és a hossz megegyezik
 }
 

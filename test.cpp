@@ -6,6 +6,7 @@
 #include <sstream>
 #include <ctime>
 #include <cstdlib>
+#include <fstream>
 
 #include "gtest_lite.h"
 #include "memtrace.h"
@@ -376,6 +377,49 @@ int main(void) {
         EXPECT_NO_THROW(encStr.set_pw(new_pw, pw)) << "Nem engedte atallitani a jelszot!" << endl;
         EXPECT_THROW(encStr.decode(pw), IncorrectPasswordException&) << "El lett fogadva a rossz jelszo!" << endl;
         EXPECT_NO_THROW(encStr.decode(new_pw)) << "Nem fogadta el a helyes jelszavat!" << endl;
+    } ENDM
+
+    TEST(EncryptedString, file/operator>>) {
+        std::ifstream inputFile;
+        std::ofstream outputFile;
+        inputFile = std::ifstream("lorem_ipsum.txt");
+        outputFile = std::ofstream("String.txt");
+        if (!inputFile.is_open() || !outputFile.is_open()) {
+            std::cerr << "Failed to one or both files." << endl;
+            return 1;
+        }
+        String word;
+        while (inputFile >> word) {
+            outputFile << word << " ";
+        }
+        inputFile.close();
+        outputFile.close();
+
+        inputFile = std::ifstream("lorem_ipsum.txt");
+        outputFile = std::ofstream("Encrypted.txt");
+        if (!inputFile.is_open() || !outputFile.is_open()) {
+            std::cerr << "Failed to one or both files." << endl;
+            return 1;
+        }
+        EncryptedString encWord(lst, pw);
+        while (inputFile >> encWord) {
+            outputFile << encWord << " ";
+        }
+        inputFile.close();
+        outputFile.close();
+        
+        std::ifstream txtString("String.txt");
+        std::ifstream txtEncrypted("Encrypted.txt");
+        if (!txtString.is_open() || !txtEncrypted.is_open()) {
+            std::cerr << "Failed to one or both files." << endl;
+            return 1;
+        }
+        char c, c_encrypted;
+        while (txtString >> c && txtEncrypted >> c_encrypted) {
+            EXPECT_EQ(c, lst.decode(c_encrypted)) << "Egy karakter nem jol lett dekodolva!" << endl;
+        }
+        txtString.close();
+        txtEncrypted.close();
     } ENDM
     return 0;
 }

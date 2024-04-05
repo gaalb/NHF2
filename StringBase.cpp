@@ -1,6 +1,7 @@
 #include "StringBase.h"
 #include <cstring>
 #include <stdexcept>
+#include <iomanip>
 
 #include "memtrace.h" //utoljára includeoljuk
 size_t StringBase::get_len() const {
@@ -194,4 +195,27 @@ bool operator!=(const char left, const StringBase& right) {
     str[0] = left;
     str[1] = '\0';
     return strcmp(str, right.c_str()) != 0;
+}
+
+/*Leading whitespace karaktereket eldobjuk, és az első whitespace-ig olvasunk.*/
+std::istream& operator>>(std::istream& is, StringBase& str) {
+    char c;
+    char* buffer = new char[1];
+    size_t length = 0;
+    is >> std::skipws;
+    while ((is >> c) && !isspace(c)) {  // ha volt beolvasott nem whitespace char
+        char* newBuffer = new char[length + 2];  //helyet foglalunk az új tömbnek
+        for (size_t i=0; i<length; ++i) {  // belemásoljuk az adatot
+            newBuffer[i] = buffer[i];
+        }
+        newBuffer[length++] = c;  // megtoldjuk az új karakterrel
+        newBuffer[length] = '\0';
+        delete[] buffer;
+        buffer = newBuffer;
+        is >> std::noskipws;
+    }
+    str = buffer;
+    delete[] buffer;
+    is >> std::skipws;
+    return is;
 }

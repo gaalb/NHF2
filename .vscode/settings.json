@@ -61,7 +61,11 @@
         "xutility": "cpp",
         "random": "cpp",
         "format": "cpp",
-        "forward_list": "cpp"
+        "forward_list": "cpp",
+        "charconv": "cpp",
+        "chrono": "cpp",
+        "optional": "cpp",
+        "ratio": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

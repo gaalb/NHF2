@@ -64,6 +64,7 @@ public:
 };
 
 std::ostream& operator<<(std::ostream& os, const StringBase& str);
+std::istream& operator>>(std::istream&, StringBase&);
 bool operator==(const char* left, const StringBase& right);
 bool operator!=(const char* left, const StringBase& right);
 bool operator==(const char left, const StringBase& right);
