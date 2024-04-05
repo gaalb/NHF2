@@ -404,6 +404,8 @@ int main(void) {
         EncryptedString encWord(lst, pw);
         while (inputFile >> encWord) {
             outputFile << encWord << " ";
+            EXPECT_THROW(encWord.decode("WrongPassword"), IncorrectPasswordException&) << "El lett fogadva a rossz jelszo!" << endl;
+            EXPECT_NO_THROW(encWord.decode(pw)) << "Nem lett elfogadva a jelszo pedig helyes volt!" << endl;
         }
         inputFile.close();
         outputFile.close();
