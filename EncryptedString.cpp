@@ -1,3 +1,8 @@
+/**
+ * @file EncryptedString.cpp
+ * @author Gaál Botond
+ * @brief 
+ */
 #include "EncryptedString.h"
 #include <cstring>
 

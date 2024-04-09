@@ -1,9 +1,9 @@
-*.doc
 *.pdf
 html/
 latex/
-*.drawio
 *.tmp
 *.zip
 *.exe
 before_stringbase/
+skeleton/
+*jpg

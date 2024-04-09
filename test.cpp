@@ -1,3 +1,10 @@
+/**
+ * @file test.cpp
+ * @author Gaál Botond
+ * @brief 
+ * 
+ */
+
 #include "StringBase.h"
 #include "String.h"
 #include "Encryptor.h"
@@ -57,7 +64,7 @@ int main(void) {
         EncryptedString s3(new ShiftEncryptor(1), pw, "12ABab"); //12ABab -> 23BCbc
         s2 = "Hello";
         /*
-        Tesztelés közben a fenti sornál a következő hibát kapom (nem minden fordítónál, de néhánynál igen):
+        Tesztelés közben a fenti sornál a következő hibát kapok (nem minden fordítónál, de néhánynál igen):
         error: ambiguous overload for 'operator=' (operand types are 'String' and 'const char [6]')
         Vagyis ezt a sort többféle képpen is tudja értelmezni. Személyesen én nem értem, mit lehet ezen
         többféleképpen értelmezni. A stringeknek 2db operator=-je van, az egyik StringBase-é konvertálna,
@@ -150,18 +157,18 @@ int main(void) {
         ShiftEncryptor inv_shift10 = -shift10;
         Encryptor* p_inv_shift10 = shift10.cloneInverse();
         Encryptor* p_shift10 = shift10.clone();
-        char first = '(';
+        char first = '!';
         char last = '}';
         EXPECT_EQ(first, shift0.encode(first)) << "kodolasi hiba" << endl;
-        EXPECT_EQ('2', shift10.encode(first)) << "kodolasi hiba" << endl;
+        EXPECT_EQ('+', shift10.encode(first)) << "kodolasi hiba" << endl;
         EXPECT_EQ('t', inv_shift10.encode(first)) << "kodolasi hiba" << endl;
         EXPECT_EQ('t', p_inv_shift10->encode(first)) << "kodolasi hiba" << endl;
-        EXPECT_EQ('2', p_shift10->encode(first)) << "kodolasi hiba" << endl;
+        EXPECT_EQ('+', p_shift10->encode(first)) << "kodolasi hiba" << endl;
 
-        EXPECT_EQ('1', shift10.encode(last)) << "kodolasi hiba" << endl;
+        EXPECT_EQ('*', shift10.encode(last)) << "kodolasi hiba" << endl;
         EXPECT_EQ('s', inv_shift10.encode(last)) << "kodolasi hiba" << endl;
         EXPECT_EQ('s', p_inv_shift10->encode(last)) << "kodolasi hiba" << endl;
-        EXPECT_EQ('1', p_shift10->encode(last)) << "kodolasi hiba" << endl;
+        EXPECT_EQ('*', p_shift10->encode(last)) << "kodolasi hiba" << endl;
 
         delete p_inv_shift10;
         delete p_shift10;
@@ -189,9 +196,9 @@ int main(void) {
         String str_encoded = enc.encode(str);
         String::iterator iter1, iter2;
         for (iter1 = str.begin(), iter2 = str_encoded.begin();iter1 != str.end(), iter2 != str_encoded.end(); ++iter1, ++iter2) {
-            if (*iter1 <= '}' && *iter1 >= '(') {
+            if (*iter1 <= '}' && *iter1 >= '!') {
                 EXPECT_TRUE(*iter2 <= '}') << "kileptunk a tartomanybol!" << endl;
-                EXPECT_TRUE(*iter2 >= '(') << "kileptunk a tartomanybol!" << endl;
+                EXPECT_TRUE(*iter2 >= '!') << "kileptunk a tartomanybol!" << endl;
             }            
         }
         EXPECT_STREQ(str.c_str(), enc.decode(str_encoded).c_str()) << "nem adja vissza az eredetit a dekoldolas" << endl;

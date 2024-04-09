@@ -1,3 +1,8 @@
+/**
+ * @file String.h
+ * @author Gaál Botond
+ * @brief 
+ */
 #ifndef STRING_H
 #define STRING_H
 #include <cstddef>  // size_t miatt
@@ -12,7 +17,7 @@ public:
     String(const char c);
     String(const StringBase& other);
     ~String();
-    String& operator=(const StringBase& rhs);
+    String& operator=(const StringBase& rhs) override;
     String& operator=(const char* rhs) override;
     String& operator=(const char rhs) override;
     String& operator=(const String& rhs);

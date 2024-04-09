@@ -1,3 +1,8 @@
+/**
+ * @file EncryptorList.cpp
+ * @author Gaál Botond
+ * @brief 
+ */
 #include "EncryptorList.h"
 
 /*A láncolt lista egy eleme. Mivel a láncolt lista ebben az esetben egy heterogén tároló,
@@ -172,7 +177,7 @@ char EncryptorList::decode(char c) const {
     return decoded;
 }
 
-EncryptorList EncryptorList::operator-() {
+EncryptorList EncryptorList::operator-() const {
     EncryptorList ret;
     for (iterator iter = rBegin(); iter!= rEnd(); --iter) {
         ret.append((*iter)->cloneInverse());

@@ -1,3 +1,8 @@
+/**
+ * @file StringBase.cpp
+ * @author Gaál Botond
+ * @brief 
+ */
 #include "StringBase.h"
 #include <cstring>
 #include <stdexcept>

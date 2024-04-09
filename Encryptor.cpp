@@ -1,3 +1,8 @@
+/**
+ * @file encryptor.cpp
+ * @author Gaál Botond
+ * @brief 
+ */
 #include "Encryptor.h"
 #include <cstdlib>
 
@@ -18,7 +23,7 @@ void printAsBinary(const T& value) {
 /*Code for Encryptors in general*/
 Encryptor::~Encryptor() {}
 
-char Encryptor::first_char = '(';
+char Encryptor::first_char = '!';
 
 char Encryptor::last_char = '}';
 
@@ -211,34 +216,4 @@ RandEncryptor RandEncryptor::operator-() const {
     RandEncryptor ret(*this);
     ret.invert();
     return ret;
-}
-/*Code for XorEncryptor (not a great encryptor for representation)*/
-XorEncryptor::XorEncryptor(char key): key(key) {}
-
-void XorEncryptor::set_key(char key) {
-    this->key = key;
-}
-
-char XorEncryptor::get_key() const {
-    return key;
-}
-
-char XorEncryptor::encode(char c) const {
-    return (c ^ key);
-}
-
-char XorEncryptor::decode(char c) const {
-    return encode(c);  // a xor a sajat ellentete
-}
-
-XorEncryptor XorEncryptor::operator-() const {
-    return XorEncryptor(key);
-}
-
-Encryptor* XorEncryptor::clone() const {
-    return new XorEncryptor(key);
-}
-
-Encryptor* XorEncryptor::cloneInverse() const {
-    return new XorEncryptor(key);
 }

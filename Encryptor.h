@@ -1,3 +1,9 @@
+/**
+ * @file Encryptor.h
+ * @author Gaál Botond
+ * @brief 
+ * 
+ */
 #ifndef ENCRYPTOR_H
 #define ENCRYPTOR_H
 
@@ -23,22 +29,6 @@ public:
     virtual ~Encryptor();
 };
 
-class XorEncryptor: public Encryptor {
-private:
-    char key;
-public:
-    using Encryptor::encode;  //avoid name hiding
-    using Encryptor::decode;  //avoid name hiding
-    XorEncryptor(char key='0');
-    void set_key(char key);
-    char get_key() const;
-    char encode(char c) const override;
-    char decode(char c) const override;
-    XorEncryptor operator-() const;
-    Encryptor* clone() const override;
-    Encryptor* cloneInverse() const override;
-};
-
 class ShiftEncryptor: public Encryptor {
 private:
     int shift;
@@ -59,6 +49,7 @@ class RandEncryptor: public Encryptor {
 private:
     char* encodeMap;
     char* decodeMap;
+    void invert();
     static void shuffle(char* array, size_t size);
 public:
     using Encryptor::encode;  //avoid name hiding
@@ -70,8 +61,7 @@ public:
     char encode(char c) const;
     char decode(char c) const;
     Encryptor* clone() const;
-    Encryptor* cloneInverse() const;
-    void invert();
+    Encryptor* cloneInverse() const;    
     RandEncryptor operator-() const;
 };
 #endif  // ENCRYPTOR_H

@@ -1,3 +1,8 @@
+/**
+ * @file EncryptedString.h
+ * @author Gaál Botond
+ * @brief 
+ */
 #ifndef ENCRYPTED_STRING_H
 #define ENCRYPTED_STRING_H
 

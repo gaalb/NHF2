@@ -1,3 +1,8 @@
+/**
+ * @file EncryptorList.h
+ * @author Gaál Botond
+ * @brief 
+ */
 #ifndef ENCRYPTOR_LIST_H
 #define ENCRYPTOR_LIST_H
 
@@ -52,7 +57,7 @@ public:
     EncryptorList& operator-=(const Encryptor& rhs);
     EncryptorList& operator+=(Encryptor* rhs);  //nem biztos hogy ezt akarjuk, hogy létezzen
     EncryptorList& operator-=(Encryptor* rhs);  //nem biztos hogy ezt akarjuk, hogy létezzen
-    EncryptorList operator-();    
+    EncryptorList operator-() const;    
 };
 
 EncryptorList operator+(const Encryptor& e1, const Encryptor& e2);

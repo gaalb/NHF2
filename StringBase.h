@@ -1,3 +1,8 @@
+/**
+ * @file StringBase.h
+ * @author Gaál Botond
+ * @brief 
+ */
 #ifndef STRING_BASE_H
 #define STRING_BASE_H
 
