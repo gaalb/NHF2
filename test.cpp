@@ -387,6 +387,51 @@ int main(void) {
         EXPECT_NO_THROW(encStr.decode(new_pw)) << "Nem fogadta el a helyes jelszavat!" << endl;
     } ENDM
 
+    TEST(EncryptedString, operator>>/operator<<) {
+        std::ifstream inputFile;
+        std::ofstream outputFile;
+        inputFile = std::ifstream("lorem_ipsum.dat");
+        outputFile = std::ofstream("String.txt");
+        if (!inputFile.is_open() || !outputFile.is_open()) {
+            std::cerr << "Failed to one or both files." << endl;
+            return 1;
+        }
+        String word;
+        while (inputFile >> word) {
+            outputFile << word << " ";
+        }
+        inputFile.close();
+        outputFile.close();
+
+        inputFile = std::ifstream("lorem_ipsum.dat");
+        outputFile = std::ofstream("Encrypted.txt");
+        if (!inputFile.is_open() || !outputFile.is_open()) {
+            std::cerr << "Failed to one or both files." << endl;
+            return 1;
+        }
+        EncryptedString encWord(lst, pw);
+        while (inputFile >> encWord) {
+            outputFile << encWord << " ";
+            EXPECT_THROW(encWord.decode("WrongPassword"), IncorrectPasswordException&) << "El lett fogadva a rossz jelszo!" << endl;
+            EXPECT_NO_THROW(encWord.decode(pw)) << "Nem lett elfogadva a jelszo pedig helyes volt!" << endl;
+        }
+        inputFile.close();
+        outputFile.close();
+        
+        std::ifstream txtString("String.txt");
+        std::ifstream txtEncrypted("Encrypted.txt");
+        if (!txtString.is_open() || !txtEncrypted.is_open()) {
+            std::cerr << "Failed to one or both files." << endl;
+            return 1;
+        }
+        char c, c_encrypted;
+        while (txtString >> c && txtEncrypted >> c_encrypted) {
+            EXPECT_EQ(c, lst.decode(c_encrypted)) << "Egy karakter nem jol lett dekodolva!" << endl;
+        }
+        txtString.close();
+        txtEncrypted.close();
+    } ENDM
+
     TEST(EncryptedString, file) {
         std::ifstream inputFile("lorem_ipsum.dat");
         if (!inputFile.is_open()) {
