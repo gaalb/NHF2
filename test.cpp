@@ -23,118 +23,121 @@ using std::endl;
 using std::cout;
 int main(void) {
     srand(static_cast<unsigned>(time(nullptr)));
+    //A String tesztcsoport ellenőrzi az std::string-gel megegyező működést.
     TEST(String, default_ctor) {
         String ures;
-        EXPECT_EQ(static_cast<size_t>(0), ures.get_len()) << "A default ctor nem 0 hosszt ad!" << endl;
-        EXPECT_STREQ("", ures.c_str()) << "A default ctor nem ures stringet ad!" << endl;
+        EXPECT_EQ(static_cast<size_t>(0), ures.get_len()) << endl;
+        EXPECT_STREQ("", ures.c_str()) << endl;
     } ENDM
+
     TEST(String, 1param_ctor) {
         const char c = 'S';
         String egybetu(c);
-        EXPECT_EQ(static_cast<size_t>(1), egybetu.get_len()) << "A char ctor nem 1 hosszt ad!" << endl;
-        EXPECT_STREQ("S", egybetu.c_str()) << "A char ctor nem megfelelo!" << endl;
+        EXPECT_EQ(static_cast<size_t>(1), egybetu.get_len()) << endl;
+        EXPECT_STREQ("S", egybetu.c_str()) << endl;
     } ENDM
+
     TEST(String, char*_ctor) {
         const char str[] = "Hello";
         String string(str);
-        EXPECT_EQ(strlen(str), string.get_len()) << "A char* ctor nem megfelelo!" << endl;
-        EXPECT_STREQ(str, string.c_str())  << "A char* ctor nem megfelelo!" << endl;
+        EXPECT_EQ(strlen(str), string.get_len()) << endl;
+        EXPECT_STREQ(str, string.c_str()) << endl;
     } ENDM
+
     TEST(String, copy_ctor) {
         String s1("String1");
         String s2(s1);
-        EXPECT_EQ(s1.get_len(), s2.get_len()) << "A masolo ctor nem megfelelo!" << endl;
-        EXPECT_STREQ(s1.c_str(), s2.c_str()) << "A masolo ctor nem megfelelo!" << endl;
+        EXPECT_EQ(s1.get_len(), s2.get_len()) << endl;
+        EXPECT_STREQ(s1.c_str(), s2.c_str()) << endl;
     } ENDM
+
     TEST(String, StringBase_ctor) {
         String pw = "pw";
         EncryptedString s1(new ShiftEncryptor(1), pw, "12ABab"); //12ABab -> 23BCbc
         String s2(s1);
-        EXPECT_EQ(s1.get_len(), s2.get_len()) << "A StringBase ctor nem megfelelo!" << endl;
-        EXPECT_STREQ(s1.c_str(), s2.c_str()) << "A StringBase ctor nem megfelelo!" << endl;
-        EXPECT_STREQ("23BCbc", s2.c_str()) << "A StringBase ctor nem megfelelo!" << endl;
+        EXPECT_EQ(s1.get_len(), s2.get_len()) << endl;
+        EXPECT_STREQ(s1.c_str(), s2.c_str()) << endl;
+        EXPECT_STREQ("23BCbc", s2.c_str()) << endl;
     } ENDM
+
     TEST(String, operator=) {
         String s1 = "String1";
         String s2 = "String2";
         s1 = s2;
-        EXPECT_EQ(s1.get_len(), s2.get_len()) << "Az = operator nem megfelelo!" << endl;
-        EXPECT_STREQ(s1.c_str(), s2.c_str()) << "Az = operator nem megfelelo!" << endl;
+        EXPECT_EQ(s1.get_len(), s2.get_len()) << endl;
+        EXPECT_STREQ(s1.c_str(), s2.c_str()) << endl;
         String pw = "pw";
         EncryptedString s3(new ShiftEncryptor(1), pw, "12ABab"); //12ABab -> 23BCbc
         s2 = "Hello";
-        /*
-        Tesztelés közben a fenti sornál a következő hibát kapok (nem minden fordítónál, de néhánynál igen):
-        error: ambiguous overload for 'operator=' (operand types are 'String' and 'const char [6]')
-        Vagyis ezt a sort többféle képpen is tudja értelmezni. Személyesen én nem értem, mit lehet ezen
-        többféleképpen értelmezni. A stringeknek 2db operator=-je van, az egyik StringBase-é konvertálna,
-        a másik String-é. Mivel StringBase-é nem lehet konvertálni (olyat nem lehet példányosítani), ezért
-        csak 1db valid opció van. Elmélet: A fordító nem elég okos hogy ezt kitalálja, és nem tudja eldönteni
-        melyiket használja? Pedig elvileg minden információ rendelkezésére áll.
-        */
         s1 = s2 = s3;
-        EXPECT_EQ(s1.get_len(), s3.get_len()) << "Az = operator nem megfelelo!" << endl;
-        EXPECT_STREQ(s1.c_str(), s3.c_str()) << "Az = operator nem megfelelo!" << endl;
-        EXPECT_STREQ(s2.c_str(), s3.c_str()) << "Az = operator nem megfelelo!" << endl;
-        EXPECT_STREQ("23BCbc", s1.c_str()) << "Az = operator nem megfelelo!" << endl;
+        EXPECT_EQ(s1.get_len(), s3.get_len()) << endl;
+        EXPECT_STREQ(s1.c_str(), s3.c_str()) << endl;
+        EXPECT_STREQ(s2.c_str(), s3.c_str()) << endl;
+        EXPECT_STREQ("23BCbc", s1.c_str()) << endl;
     } ENDM
+
     TEST(String, operator+=) {
         String s1;
         s1 += 'a';
-        EXPECT_STREQ(s1.c_str(), "a") << "A +=(char) operator nem megfelelo!" << endl;
+        EXPECT_STREQ(s1.c_str(), "a") << endl;
         s1 += "bc";
-        EXPECT_STREQ(s1.c_str(), "abc") << "A +=(char*) operator nem megfelelo!" << endl;
+        EXPECT_STREQ(s1.c_str(), "abc") << endl;
         s1 += String("de");
-        EXPECT_STREQ(s1.c_str(), "abcde") << "A +=(String) operator nem megfelelo!" << endl;
+        EXPECT_STREQ(s1.c_str(), "abcde") << endl;
         s1 += EncryptedString(new ShiftEncryptor(1), "pw", "fg");  //fg -> gh
-        EXPECT_STREQ(s1.c_str(), "abcdegh") << "A +=(StringBase) operator nem megfelelo!" << endl;
-        EXPECT_EQ(strlen("abcdegh"), s1.get_len()) << "A += kontakenalas sikeres de a hossz nem jo!" << endl;
+        EXPECT_STREQ(s1.c_str(), "abcdegh") << endl;
+        EXPECT_EQ(strlen("abcdegh"), s1.get_len()) << endl;
     } ENDM
+
     TEST(String, operator+) {
         String s1 = 'a';
         s1 = s1 + 'b';
-        EXPECT_STREQ(s1.c_str(), "ab") << "A +(char) operator nem megfelelo!" << endl;
+        EXPECT_STREQ(s1.c_str(), "ab") << endl;
         s1 = s1 + "c";
-        EXPECT_STREQ(s1.c_str(), "abc") << "A +(char*) operator nem megfelelo!" << endl;
+        EXPECT_STREQ(s1.c_str(), "abc") << endl;
         s1 = s1 + String("de");
-        EXPECT_STREQ(s1.c_str(), "abcde") << "A +(String) operator nem megfelelo!" << endl;
+        EXPECT_STREQ(s1.c_str(), "abcde") << endl;
         s1 = s1 + EncryptedString(new ShiftEncryptor(1), "pw", "fg");  //fg -> gh
-        EXPECT_STREQ(s1.c_str(), "abcdegh") << "A +(StringBase) operator nem megfelelo!" << endl;
-        EXPECT_EQ(strlen("abcdegh"), s1.get_len()) << "A + kontakenalas sikeres de a hossz nem jo!" << endl;
+        EXPECT_STREQ(s1.c_str(), "abcdegh") << endl;
+        EXPECT_EQ(strlen("abcdegh"), s1.get_len()) << endl;
         String s2;
         s2 = '0' + s1;
-        EXPECT_STREQ(s2.c_str(), "0abcdegh") << "A globalis char+String operator nem megfelelo!" << endl;
+        EXPECT_STREQ(s2.c_str(), "0abcdegh") << endl;
         s2 = "0" + s1;
-        EXPECT_STREQ(s2.c_str(), "0abcdegh") << "A globalis char*+String operator nem megfelelo!" << endl;
+        EXPECT_STREQ(s2.c_str(), "0abcdegh") << endl;
     } ENDM
+
     TEST(String, operator[]) {
         String s1 = "0123";
         const String s2 = s1;
         EXPECT_THROW(s1[10], std::out_of_range&) << "Nincs letiltva a tulindexeles!" << endl;
         EXPECT_NO_THROW(s2[0]) << "Nincs megcsinalva a const indexeles!" << endl;
-        EXPECT_EQ('2', s1[2]) << "Nem jo karaktert ad vissza az indexeles" << endl;
+        EXPECT_EQ('2', s1[2]) << endl;
         s1[0] = 'a';
         EXPECT_STREQ("a123", s1.c_str()) << "Nem mukodik helyesen az indexen keresztul modositas" << endl;
     } ENDM
+
     TEST(String, operator==/!=) {
         String a = "a";
-        EXPECT_TRUE(a == 'a') << "== nem megfelelo!" << endl;
-        EXPECT_TRUE(a == "a") << "== nem megfelelo!" << endl;
-        EXPECT_TRUE(a == String("a")) << "== nem megfelelo!" << endl;
-        EXPECT_TRUE('a' == a) << "== nem megfelelo!" << endl;
-        EXPECT_TRUE("a" == a) << "== nem megfelelo!" << endl;
-        EXPECT_TRUE(a != 'b') << "!= nem megfelelo!" << endl;
-        EXPECT_TRUE(a != "b") << "!= nem megfelelo!" << endl;
-        EXPECT_TRUE(a != String("b")) << "!= nem megfelelo!" << endl;
-        EXPECT_TRUE('b' != a) << "!= nem megfelelo!" << endl;
-        EXPECT_TRUE("b" != a) << "!= nem megfelelo!" << endl;
+        EXPECT_TRUE(a == 'a') << endl;
+        EXPECT_TRUE(a == "a") << endl;
+        EXPECT_TRUE(a == String("a")) << endl;
+        EXPECT_TRUE('a' == a) << endl;
+        EXPECT_TRUE("a" == a) << endl;
+        EXPECT_TRUE(a != 'b') << endl;
+        EXPECT_TRUE(a != "b") << endl;
+        EXPECT_TRUE(a != String("b")) << endl;
+        EXPECT_TRUE('b' != a) << endl;
+        EXPECT_TRUE("b" != a) << endl;
     } ENDM
+
     TEST(String, operator<<) {
         String s("Hello");
         std::stringstream ss;
         ss << s;
         EXPECT_STREQ("Hello", ss.str().c_str());
     } ENDM
+
     TEST(String, iterator) {
         const String s1("Hello there! General Kenobi!");
         String s2;
@@ -142,13 +145,13 @@ int main(void) {
         for (String::const_iterator iter = s1.begin(); iter != s1.end(); iter++) { //posztinkremens
             s2 += *iter;
         }
-        EXPECT_STREQ(s1.c_str(), s2.c_str()) << "const_iterator helytelen!" << endl;
+        EXPECT_STREQ(s1.c_str(), s2.c_str()) << endl;
         s2 = "0123";
         for (String::iterator iter = s2.begin(); iter != s2.end(); ++iter) {
             int szamkent = static_cast<int>(*iter);
             *iter = static_cast<char>(szamkent + 1); 
         }
-        EXPECT_STREQ("1234", s2.c_str()) << "iterator helytelen!" << endl;
+        EXPECT_STREQ("1234", s2.c_str()) << endl;
     } ENDM    
 
     TEST(ShiftEncryptor, encode) {
@@ -159,16 +162,16 @@ int main(void) {
         Encryptor* p_shift10 = shift10.clone();
         char first = '!';
         char last = '}';
-        EXPECT_EQ(first, shift0.encode(first)) << "kodolasi hiba" << endl;
-        EXPECT_EQ('+', shift10.encode(first)) << "kodolasi hiba" << endl;
-        EXPECT_EQ('t', inv_shift10.encode(first)) << "kodolasi hiba" << endl;
-        EXPECT_EQ('t', p_inv_shift10->encode(first)) << "kodolasi hiba" << endl;
-        EXPECT_EQ('+', p_shift10->encode(first)) << "kodolasi hiba" << endl;
+        EXPECT_EQ(first, shift0.encode(first)) << endl;
+        EXPECT_EQ('+', shift10.encode(first)) << endl;
+        EXPECT_EQ('t', inv_shift10.encode(first)) << endl;
+        EXPECT_EQ('t', p_inv_shift10->encode(first)) << endl;
+        EXPECT_EQ('+', p_shift10->encode(first)) << endl;
 
-        EXPECT_EQ('*', shift10.encode(last)) << "kodolasi hiba" << endl;
-        EXPECT_EQ('s', inv_shift10.encode(last)) << "kodolasi hiba" << endl;
-        EXPECT_EQ('s', p_inv_shift10->encode(last)) << "kodolasi hiba" << endl;
-        EXPECT_EQ('*', p_shift10->encode(last)) << "kodolasi hiba" << endl;
+        EXPECT_EQ('*', shift10.encode(last)) << endl;
+        EXPECT_EQ('s', inv_shift10.encode(last)) << endl;
+        EXPECT_EQ('s', p_inv_shift10->encode(last)) << endl;
+        EXPECT_EQ('*', p_shift10->encode(last)) << endl;
 
         delete p_inv_shift10;
         delete p_shift10;
@@ -179,14 +182,14 @@ int main(void) {
         Encryptor* inv_enc = enc.cloneInverse();
         char c = ']';
         String NiceString = "NiceString!";
-        EXPECT_EQ(c, enc.decode(enc.encode(c))) << "dekodolasi hiba" << endl;
-        EXPECT_EQ(c, enc.encode(enc.decode(c))) << "dekodolasi hiba" << endl;
-        EXPECT_EQ(c, enc.encode((-enc).encode(c))) << "dekodolasi hiba" << endl;
-        EXPECT_EQ(c, enc.decode((-enc).decode(c))) << "dekodolasi hiba" << endl;
-        EXPECT_EQ(enc.encode(c), inv_enc->decode(c)) << "dekodolasi hiba" << endl;
-        EXPECT_EQ(enc.decode(c), inv_enc->encode(c)) << "dekodolasi hiba" << endl;
-        EXPECT_STREQ("NiceString!", enc.encode(enc.decode(NiceString)).c_str()) << "dekodolasi hiba" << endl;
-        EXPECT_STREQ("NiceString!", inv_enc->encode(enc.encode(NiceString)).c_str()) << "dekodolasi hiba" << endl;
+        EXPECT_EQ(c, enc.decode(enc.encode(c))) << endl;
+        EXPECT_EQ(c, enc.encode(enc.decode(c))) << endl;
+        EXPECT_EQ(c, enc.encode((-enc).encode(c))) << endl;
+        EXPECT_EQ(c, enc.decode((-enc).decode(c))) << endl;
+        EXPECT_EQ(enc.encode(c), inv_enc->decode(c)) << endl;
+        EXPECT_EQ(enc.decode(c), inv_enc->encode(c)) << endl;
+        EXPECT_STREQ("NiceString!", enc.encode(enc.decode(NiceString)).c_str()) << endl;
+        EXPECT_STREQ("NiceString!", inv_enc->encode(enc.encode(NiceString)).c_str()) << endl;
         delete inv_enc;
     } ENDM
 
@@ -197,21 +200,21 @@ int main(void) {
         String::iterator iter1, iter2;
         for (iter1 = str.begin(), iter2 = str_encoded.begin();iter1 != str.end(), iter2 != str_encoded.end(); ++iter1, ++iter2) {
             if (*iter1 <= '}' && *iter1 >= '!') {
-                EXPECT_TRUE(*iter2 <= '}') << "kileptunk a tartomanybol!" << endl;
-                EXPECT_TRUE(*iter2 >= '!') << "kileptunk a tartomanybol!" << endl;
+                EXPECT_TRUE(*iter2 <= '}') << "Kileptunk a tartomanybol!" << endl;
+                EXPECT_TRUE(*iter2 >= '!') << "Kileptunk a tartomanybol!" << endl;
             }            
         }
-        EXPECT_STREQ(str.c_str(), enc.decode(str_encoded).c_str()) << "nem adja vissza az eredetit a dekoldolas" << endl;
+        EXPECT_STREQ(str.c_str(), enc.decode(str_encoded).c_str()) << "Nem adja vissza az eredetit a dekoldolas!" << endl;
         RandEncryptor inv_enc;
         inv_enc = -enc;
-        EXPECT_TRUE(enc.encode(str) == inv_enc.decode(str)) << "nem adja vissza az eredetit az inverz" << endl;
+        EXPECT_TRUE(enc.encode(str) == inv_enc.decode(str)) << "Nem adja vissza az eredetit az inverz!" << endl;
         Encryptor* p_enc = enc.clone();
         Encryptor* p_inv_enc = enc.cloneInverse();
-        EXPECT_STREQ(enc.encode(str).c_str(), p_enc->encode(str).c_str()) << "klonozas nem jo" << endl;
-        EXPECT_STREQ(inv_enc.encode(str).c_str(), p_inv_enc->encode(str).c_str()) << "inverz klonozas nem jo" << endl;
+        EXPECT_STREQ(enc.encode(str).c_str(), p_enc->encode(str).c_str()) << "Klonozas nem volt sikeres!" << endl;
+        EXPECT_STREQ(inv_enc.encode(str).c_str(), p_inv_enc->encode(str).c_str()) << "Inverz klonozas nem volt sikeres!" << endl;
         RandEncryptor other_enc;
-        EXPECT_FALSE(enc.encode(str) == enc.decode(str)) << "ugyanaz az encode mint a decode?" << endl;
-        EXPECT_FALSE(enc.encode(str) == other_enc.encode(str)) << "nem randomizal!" << endl;
+        EXPECT_FALSE(enc.encode(str) == enc.decode(str)) << "Ugyanaz az encode mint a decode!" << endl;
+        EXPECT_FALSE(enc.encode(str) == other_enc.encode(str)) << "Nem randomizal!" << endl;
         delete p_enc;
         delete p_inv_enc;
     } ENDM
@@ -235,8 +238,8 @@ int main(void) {
         String str = "Hello there! General Kenobi!";
         String encoded = lst.encode(str);
         String decoded = lst.decode(encoded);
-        EXPECT_FALSE(str == lst.encode(str)) << "Nem tortent kodolas!" << endl;
-        EXPECT_STREQ(str.c_str(), decoded.c_str()) << "Nem az inverze a dekodolas!" << endl;
+        EXPECT_FALSE(str == lst.encode(str)) << endl;
+        EXPECT_STREQ(str.c_str(), decoded.c_str()) << "Nem inverz a dekodolas!" << endl;
         String str2 = str;
         str2 = shift1.encode(str2);
         str2 = (-rand1).encode(str2);
@@ -271,29 +274,29 @@ int main(void) {
     TEST(EncryptedString, char_ctor) {
         char c = 'c';
         EncryptedString encStr(lst, pw, c);
-        EXPECT_EQ(encStr.get_len(), static_cast<size_t>(1)) << "Hossz nem jo!" << endl;
-        EXPECT_STREQ(encStr.c_str(), lst.encode(String(c)).c_str()) << "Nem helyesen kodol!" << endl;
+        EXPECT_EQ(encStr.get_len(), static_cast<size_t>(1)) << endl;
+        EXPECT_STREQ(encStr.c_str(), lst.encode(String(c)).c_str()) << endl;
     } ENDM
 
     TEST(EncryptedString, char*_ctor) {
         char str[] = "Hello!";
         EncryptedString encStr(lst, pw, str);
-        EXPECT_EQ(encStr.get_len(), static_cast<size_t>(6)) << "Hossz nem jo!" << endl;
-        EXPECT_STREQ(encStr.c_str(), lst.encode(String(str)).c_str()) << "Nem helyesen kodol!" << endl;
+        EXPECT_EQ(encStr.get_len(), static_cast<size_t>(6)) << endl;
+        EXPECT_STREQ(encStr.c_str(), lst.encode(String(str)).c_str()) << endl;
     } ENDM
 
     TEST(EncryptedString, string_ctor) {
         String str = "Hello!";
         EncryptedString encStr(lst, pw, str);
-        EXPECT_EQ(encStr.get_len(), static_cast<size_t>(6)) << "Hossz nem jo!" << endl;
-        EXPECT_STREQ(encStr.c_str(), lst.encode(String(str)).c_str()) << "Nem helyesen kodol!" << endl;
+        EXPECT_EQ(encStr.get_len(), static_cast<size_t>(6)) << endl;
+        EXPECT_STREQ(encStr.c_str(), lst.encode(String(str)).c_str()) << endl;
     } ENDM
 
     TEST(EncryptedString, copy_ctor) {
         EncryptedString encStr1(lst, pw, "Copy ctor!");
         EncryptedString encStr2 = encStr1;
-        EXPECT_EQ(encStr1.get_len(), encStr2.get_len()) << "Hossz nem jo!" << endl;
-        EXPECT_STREQ(encStr1.c_str(), encStr2.c_str()) << "Nem helyesen kodol!" << endl;
+        EXPECT_EQ(encStr1.get_len(), encStr2.get_len()) << endl;
+        EXPECT_STREQ(encStr1.c_str(), encStr2.c_str()) << endl;
     } ENDM
 
     TEST(EncryptedString, operator!=/==) {
@@ -301,45 +304,45 @@ int main(void) {
         char c_str[] = "Hello!";
         String str = "!Olleh";
         EncryptedString encStr(lst, pw, c);
-        EXPECT_TRUE(lst.encode(c) == encStr) << "char==EncrypterString hibás" << endl;
-        EXPECT_TRUE(encStr == lst.encode(c)) << "EncrypterString==char hibás" << endl;
-        EXPECT_FALSE(lst.encode(c) != encStr) << "char!=EncrypterString hibás" << endl;
-        EXPECT_FALSE(encStr != lst.encode(c)) << "EncrypterString==char hibás" << endl;
+        EXPECT_TRUE(lst.encode(c) == encStr) << endl;
+        EXPECT_TRUE(encStr == lst.encode(c)) << endl;
+        EXPECT_FALSE(lst.encode(c) != encStr) << endl;
+        EXPECT_FALSE(encStr != lst.encode(c)) << endl;
 
         encStr = EncryptedString(lst, pw, c_str);
-        EXPECT_TRUE(lst.encode(c_str) == encStr) << "char*==EncrypterString hibás" << endl;
-        EXPECT_TRUE(encStr == lst.encode(c_str)) << "EncrypterString==char* hibás" << endl;
-        EXPECT_FALSE(lst.encode(c_str) != encStr) << "char*!=EncrypterString hibás" << endl;
-        EXPECT_FALSE(encStr != lst.encode(c_str)) << "EncrypterString==char* hibás" << endl;
+        EXPECT_TRUE(lst.encode(c_str) == encStr) << endl;
+        EXPECT_TRUE(encStr == lst.encode(c_str)) << endl;
+        EXPECT_FALSE(lst.encode(c_str) != encStr)  << endl;
+        EXPECT_FALSE(encStr != lst.encode(c_str)) << endl;
 
         encStr = EncryptedString(lst, pw, str);
-        EXPECT_TRUE(lst.encode(str) == encStr) << "String==EncrypterString hibás" << endl;
-        EXPECT_TRUE(encStr == lst.encode(str)) << "EncrypterString==String hibás" << endl;
-        EXPECT_FALSE(lst.encode(str) != encStr) << "String!=EncrypterString hibás" << endl;
-        EXPECT_FALSE(encStr != lst.encode(str)) << "EncrypterString==String hibás" << endl;
+        EXPECT_TRUE(lst.encode(str) == encStr) << endl;
+        EXPECT_TRUE(encStr == lst.encode(str)) << endl;
+        EXPECT_FALSE(lst.encode(str) != encStr) << endl;
+        EXPECT_FALSE(encStr != lst.encode(str)) << endl;
     } ENDM
 
     TEST(EncryptedString, operator=) {
         EncryptedString encStr1(lst, pw, "Copy ctor!");
         EncryptedString encStr2 = EncryptedString(RandEncryptor(), "otherPw", "SomeString");
         encStr2 = encStr1;
-        EXPECT_STREQ(encStr1.c_str(), encStr2.c_str()) << "Nem helyesen kodol!" << endl;
+        EXPECT_STREQ(encStr1.c_str(), encStr2.c_str()) << endl;
         char c = '?';
         encStr1 = c;
-        EXPECT_STREQ(encStr1.c_str(), lst.encode(String(c)).c_str()) << "Nem helyesen kodol!" << endl;
+        EXPECT_STREQ(encStr1.c_str(), lst.encode(String(c)).c_str()) << endl;
         char c_str[] = "c string";
         encStr1 = c_str;
-        EXPECT_STREQ(encStr1.c_str(), lst.encode(c_str).c_str()) << "Nem helyesen kodol!" << endl;
+        EXPECT_STREQ(encStr1.c_str(), lst.encode(c_str).c_str()) << endl;
         String str = "MyString";
         encStr1 = str;
-        EXPECT_STREQ(encStr1.c_str(), lst.encode(str).c_str()) << "Nem helyesen kodol!" << endl;
+        EXPECT_STREQ(encStr1.c_str(), lst.encode(str).c_str()) << endl;
     } ENDM
 
     TEST(EncryptedString, decode) {
         String str = "Thank you EncryptedString! Very cool!";
         EncryptedString encStr = EncryptedString(lst, pw, str);
         EXPECT_FALSE(str == encStr) << "Nem tortent kodolas" << endl;
-        EXPECT_TRUE(lst.encode(str) == encStr) << "Nem helyesen kodol!" << endl;
+        EXPECT_TRUE(lst.encode(str) == encStr) << endl;
         EXPECT_THROW(encStr.decode("WrongPassword"), IncorrectPasswordException&) << "Nem dob hibat a rossz jelszo!" << endl;
         EXPECT_TRUE(str == encStr.decode(pw)) << "Nem sikerult visszacsinalni a titkositast!" << endl;
     } ENDM
@@ -362,13 +365,13 @@ int main(void) {
         EncryptedString encStr = EncryptedString(lst, pw);
         EXPECT_TRUE("" == encStr) << "Nem ures string!" << endl;
         encStr += str;
-        EXPECT_TRUE(lst.encode(str) == encStr) << "Nem helyes a konkatenalas" << endl;
+        EXPECT_TRUE(lst.encode(str) == encStr) << endl;
         encStr += c_str;
         str += c_str;
-        EXPECT_TRUE(lst.encode(str) == encStr) << "Nem helyes a konkatenalas" << endl;
+        EXPECT_TRUE(lst.encode(str) == encStr) << endl;
         encStr += c;
         str += c;
-        EXPECT_TRUE(lst.encode(str) == encStr) << "Nem helyes a konkatenalas" << endl;
+        EXPECT_TRUE(lst.encode(str) == encStr) << endl;
     } ENDM
 
     TEST(EncryptedString, change_encryptor/change_pw) {

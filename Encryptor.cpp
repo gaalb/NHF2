@@ -8,19 +8,6 @@
 
 #include "memtrace.h"
 
-// Template function to print the binary representation of any type
-template <typename T>
-void printAsBinary(const T& value) {
-    const char* valuePtr = reinterpret_cast<const char*>(&value);
-    for (int i = sizeof(T) - 1; i >= 0; --i) {
-        for (int j = 7; j >= 0; --j) {
-            std::cout << ((valuePtr[i] >> j) & 1);
-        }
-        std::cout << " "; // Optional: Adds a space between bytes for readability
-    }
-}
-
-/*Code for Encryptors in general*/
 Encryptor::~Encryptor() {}
 
 char Encryptor::first_char = '!';
@@ -36,7 +23,6 @@ bool Encryptor::isValidInput(int c) const {
     } else {
         return false;
     }
-    return false;
 }
 
 /*Egy értelmezési tartományon kívül eső karaktert bele tol, úgy, hogy

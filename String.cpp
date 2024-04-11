@@ -34,7 +34,7 @@ hívjuk meg, mivel van megfelelő konstruktor, át tudja konvertálni
 Stringgé a char vagy char*-t. Ennek ellenére az én IDE-m az ilyen
 felhasználásnál panaszkodik (hiába fordul a program).
 
-Másnap másik fordítón ezt megnézve: valszeg ez az extra
+Másnap másik fordítón ezt megnézve: valszeg az extra
 operator=konstruktorokkal ez nem lesz baj.
 A problémát specifikusan ez okozta:
 String s1;
