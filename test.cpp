@@ -1,9 +1,7 @@
-/**
- * @file test.cpp
- * @author Gaál Botond
- * @brief 
- * 
- */
+/// @file test.cpp
+/// @author Gaál Botond
+/// @brief Teszt program a Prog2 nagyházihoz 
+
 
 #include "StringBase.h"
 #include "String.h"
@@ -389,49 +387,23 @@ int main(void) {
         EXPECT_NO_THROW(encStr.decode(new_pw)) << "Nem fogadta el a helyes jelszavat!" << endl;
     } ENDM
 
-    TEST(EncryptedString, file/operator>>) {
-        std::ifstream inputFile;
-        std::ofstream outputFile;
-        inputFile = std::ifstream("lorem_ipsum.txt");
-        outputFile = std::ofstream("String.txt");
-        if (!inputFile.is_open() || !outputFile.is_open()) {
-            std::cerr << "Failed to one or both files." << endl;
+    TEST(EncryptedString, file) {
+        std::ifstream inputFile("lorem_ipsum.dat");
+        if (!inputFile.is_open()) {
+            std::cerr << "Failed to open file." << endl;
             return 1;
         }
-        String word;
-        while (inputFile >> word) {
-            outputFile << word << " ";
-        }
+        std::stringstream buffer;
+        buffer << inputFile.rdbuf();
         inputFile.close();
-        outputFile.close();
-
-        inputFile = std::ifstream("lorem_ipsum.txt");
-        outputFile = std::ofstream("Encrypted.txt");
-        if (!inputFile.is_open() || !outputFile.is_open()) {
-            std::cerr << "Failed to one or both files." << endl;
-            return 1;
-        }
-        EncryptedString encWord(lst, pw);
-        while (inputFile >> encWord) {
-            outputFile << encWord << " ";
-            EXPECT_THROW(encWord.decode("WrongPassword"), IncorrectPasswordException&) << "El lett fogadva a rossz jelszo!" << endl;
-            EXPECT_NO_THROW(encWord.decode(pw)) << "Nem lett elfogadva a jelszo pedig helyes volt!" << endl;
-        }
-        inputFile.close();
-        outputFile.close();
-        
-        std::ifstream txtString("String.txt");
-        std::ifstream txtEncrypted("Encrypted.txt");
-        if (!txtString.is_open() || !txtEncrypted.is_open()) {
-            std::cerr << "Failed to one or both files." << endl;
-            return 1;
-        }
-        char c, c_encrypted;
-        while (txtString >> c && txtEncrypted >> c_encrypted) {
-            EXPECT_EQ(c, lst.decode(c_encrypted)) << "Egy karakter nem jol lett dekodolva!" << endl;
-        }
-        txtString.close();
-        txtEncrypted.close();
+        String raw(buffer.str().c_str());
+        EncryptedString encrypted(lst, pw);
+        encrypted = raw;
+        String decoded;
+        EXPECT_THROW(decoded = encrypted.decode("WrongPassword"),IncorrectPasswordException&) << "El lett fogadva a rossz jelszo!" << endl;
+        EXPECT_NO_THROW(decoded = encrypted.decode(pw)) << "Nem lett elfogadva a jelszo pedig helyes volt!" << endl;
+        EXPECT_FALSE(raw == encrypted);
+        EXPECT_TRUE(decoded == raw);
     } ENDM
     return 0;
 }
